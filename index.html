@@ -145,10 +145,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 </div>
 
 <div class="extra-tabs">
-  <button class="extra-tab active" onclick="setTab('itinerario')">Itinerario</button>
-  <button class="extra-tab" onclick="setTab('clima')">Clima</button>
-  <button class="extra-tab" onclick="setTab('shekel')">₪ Shekel</button>
-  <button class="extra-tab" onclick="setTab('mapa')">Mapa</button>
+  <button class="extra-tab active" id="tab-btn-itinerario" onclick="setTab('itinerario')">Itinerario</button>
+  <button class="extra-tab" id="tab-btn-clima" onclick="setTab('clima')">Clima</button>
+  <button class="extra-tab" id="tab-btn-shekel" onclick="setTab('shekel')">₪ Shekel</button>
+  <button class="extra-tab" id="tab-btn-mapa" onclick="setTab('mapa')">Mapa</button>
 </div>
 
 <div id="tab-itinerario" class="panel active">
@@ -308,17 +308,19 @@ function setTab(tab) {
   activeTab = tab;
   document.querySelectorAll('.extra-tab').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  event.target.classList.add('active');
+  document.getElementById('tab-btn-'+tab).classList.add('active');
   document.getElementById('tab-'+tab).classList.add('active');
-  if (tab === 'clima' && !weatherData) loadWeather();
+  if (tab === 'clima') { if (!weatherData) loadWeather(); else renderWeatherPanelForDay(); }
   if (tab === 'shekel' && !usdIls) loadRate();
   if (tab === 'mapa') renderMap();
 }
 
 function setDay(id) {
   activeDayId = id;
-  renderItinerario();
   renderNav();
+  if (activeTab === 'itinerario') renderItinerario();
+  else if (activeTab === 'clima') { if (!weatherData) loadWeather(); else renderWeatherPanelForDay(); }
+  else if (activeTab === 'mapa') renderMap();
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
@@ -353,7 +355,8 @@ function renderWeatherPanel() {
     if (!w) return '';
     const icon = WMO_ICON[w.code] || '🌡️';
     const desc = WMO[w.code] || '';
-    return `<div class="clima-card">
+    const isActive = d.id === activeDayId;
+    return `<div class="clima-card" onclick="setDay('${d.id}')" style="cursor:pointer;${isActive ? 'border:2px solid #D62828;' : ''}">
       <div class="clima-card-fecha">${d.pill.toUpperCase()}</div>
       <div class="clima-card-icon">${icon}</div>
       <div class="clima-card-temps">${w.max}° <span>/ ${w.min}°C</span></div>
@@ -362,6 +365,10 @@ function renderWeatherPanel() {
     </div>`;
   }).join('') + '</div>';
   document.getElementById('climaContent').innerHTML = html;
+}
+
+function renderWeatherPanelForDay() {
+  renderWeatherPanel();
 }
 
 function updateHeaderWeather() {
@@ -418,10 +425,8 @@ function renderTips() {
 
 function renderMap() {
   const sel = document.getElementById('mapSelect');
-  if (!sel.innerHTML) {
-    sel.innerHTML = dias.map(d => `<option value="${d.id}">${d.num} — ${d.pill} — ${d.titulo}</option>`).join('');
-    sel.value = activeDayId;
-  }
+  sel.innerHTML = dias.map(d => `<option value="${d.id}">${d.num} — ${d.pill} — ${d.titulo}</option>`).join('');
+  sel.value = activeDayId;
   const dia = dias.find(d => d.id === sel.value);
   if (!dia || !dia.bloques.length) {
     document.getElementById('mapContent').innerHTML = '<p class="clima-loading">Sin puntos para este día.</p>';
