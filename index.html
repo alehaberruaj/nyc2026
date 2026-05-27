@@ -113,6 +113,19 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .conv-tip-usd { font-size: 14px; color: var(--gris3); }
 .conv-tip-ils { font-size: 14px; font-weight: 600; color: var(--negro); }
 
+/* HORARIO LLUVIA */
+.hourly-title { font-size: 11px; font-weight: 700; color: #A0A0A0; letter-spacing: 1px; margin: 14px 0 8px; }
+.hourly-scroll { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+.hourly-scroll::-webkit-scrollbar { display: none; }
+.hourly-item { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 44px; }
+.hourly-hora { font-size: 10px; color: #A0A0A0; font-weight: 600; }
+.hourly-icon { font-size: 16px; line-height: 1; }
+.hourly-pct { font-size: 10px; font-weight: 700; }
+.hourly-pct.rain-low { color: #A0A0A0; }
+.hourly-pct.rain-mid { color: #64B5F6; }
+.hourly-pct.rain-high { color: #1565C0; }
+.hourly-temp { font-size: 10px; color: #6B6B6B; }
+
 /* MAPA */
 .map-day-title { font-size: 13px; font-weight: 700; color: var(--negro); margin-bottom: 10px; letter-spacing: 0.3px; }
 .map-frame { border-radius: 12px; overflow: hidden; border: 1px solid var(--gris5); margin-bottom: 20px; }
@@ -298,6 +311,7 @@ let checks = (() => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)|
 let activeDayId = dias[0].id;
 let activeTab = 'itinerario';
 let weatherData = null;
+let weatherHourly = null;
 let usdIls = null;
 
 function saveChecks() { localStorage.setItem(STORAGE_KEY, JSON.stringify(checks)); }
@@ -326,9 +340,11 @@ function setDay(id) {
 
 async function loadWeather() {
   try {
-    const url = 'https://api.open-meteo.com/v1/forecast?latitude=40.7128&longitude=-74.0060&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&timezone=America/New_York&start_date=2026-05-29&end_date=2026-06-07&wind_speed_unit=mph';
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=40.7128&longitude=-74.0060&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&hourly=temperature_2m,precipitation_probability,weathercode&timezone=America/New_York&start_date=2026-05-29&end_date=2026-06-07';
     const r = await fetch(url);
-    weatherData = (await r.json()).daily;
+    const json = await r.json();
+    weatherData = json.daily;
+    weatherHourly = json.hourly;
     renderWeatherPanel();
     updateHeaderWeather();
   } catch(e) {
@@ -348,23 +364,75 @@ function getWeatherForDate(dateStr) {
   };
 }
 
+function getHourlyForDate(dateStr) {
+  if (!weatherHourly) return [];
+  const result = [];
+  weatherHourly.time.forEach((t, i) => {
+    if (t.startsWith(dateStr)) {
+      const hour = parseInt(t.split('T')[1]);
+      if (hour >= 7 && hour <= 23) {
+        result.push({
+          hour,
+          label: hour + ':00',
+          temp: Math.round(weatherHourly.temperature_2m[i]),
+          rain: weatherHourly.precipitation_probability[i],
+          code: weatherHourly.weathercode[i]
+        });
+      }
+    }
+  });
+  return result;
+}
+
+function buildHourlyHTML(dateStr) {
+  const hours = getHourlyForDate(dateStr);
+  if (!hours.length) return '';
+  const html = hours.map(h => {
+    const rainClass = h.rain >= 60 ? 'rain-high' : h.rain >= 30 ? 'rain-mid' : 'rain-low';
+    return `<div class="hourly-item">
+      <div class="hourly-hora">${h.label}</div>
+      <div class="hourly-icon">${WMO_ICON[h.code]||'🌡️'}</div>
+      <div class="hourly-pct ${rainClass}">${h.rain}%</div>
+      <div class="hourly-temp">${h.temp}°</div>
+    </div>`;
+  }).join('');
+  return `<div class="hourly-title">HORA A HORA (07:00–23:00)</div>
+    <div class="hourly-scroll">${html}</div>`;
+}
+
 function renderWeatherPanel() {
   if (!weatherData) return;
-  const html = '<div class="clima-grid">' + dias.map(d => {
+  const dia = dias.find(d => d.id === activeDayId);
+  const wActive = dia ? getWeatherForDate(dia.weatherDate) : null;
+
+  const detailHTML = wActive ? `
+    <div class="clima-card" style="margin-bottom:14px;border:2px solid #D62828;">
+      <div class="clima-card-fecha">${dia.pill.toUpperCase()} — ${dia.titulo.toUpperCase()}</div>
+      <div style="display:flex;align-items:center;gap:12px;margin:8px 0;">
+        <div class="clima-card-icon" style="font-size:36px;margin:0;">${WMO_ICON[wActive.code]||'🌡️'}</div>
+        <div>
+          <div class="clima-card-temps" style="font-size:22px;">${wActive.max}° <span>/ ${wActive.min}°C</span></div>
+          <div class="clima-card-desc">${(WMO[wActive.code]||'').replace(/[^\w\sáéíóúüñÁÉÍÓÚÜÑ,]/g,'').trim()}</div>
+          <div class="clima-card-rain">💧 ${wActive.rain}% prob. lluvia</div>
+        </div>
+      </div>
+      ${buildHourlyHTML(dia.weatherDate)}
+    </div>` : '';
+
+  const gridHTML = '<div class="clima-grid">' + dias.map(d => {
     const w = getWeatherForDate(d.weatherDate);
     if (!w) return '';
     const icon = WMO_ICON[w.code] || '🌡️';
-    const desc = WMO[w.code] || '';
     const isActive = d.id === activeDayId;
-    return `<div class="clima-card" onclick="setDay('${d.id}')" style="cursor:pointer;${isActive ? 'border:2px solid #D62828;' : ''}">
+    return `<div class="clima-card" onclick="setDay('${d.id}')" style="cursor:pointer;${isActive ? 'opacity:0.5;' : ''}">
       <div class="clima-card-fecha">${d.pill.toUpperCase()}</div>
       <div class="clima-card-icon">${icon}</div>
       <div class="clima-card-temps">${w.max}° <span>/ ${w.min}°C</span></div>
-      <div class="clima-card-desc">${desc.replace(/[^\w\sáéíóúüñÁÉÍÓÚÜÑ,]/g,'').trim()}</div>
-      <div class="clima-card-rain">💧 ${w.rain}% lluvia</div>
+      <div class="clima-card-rain">💧 ${w.rain}%</div>
     </div>`;
   }).join('') + '</div>';
-  document.getElementById('climaContent').innerHTML = html;
+
+  document.getElementById('climaContent').innerHTML = detailHTML + '<div class="hourly-title">TODOS LOS DÍAS</div>' + gridHTML;
 }
 
 function renderWeatherPanelForDay() {
