@@ -126,6 +126,49 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .hourly-pct.rain-high { color: #1565C0; }
 .hourly-temp { font-size: 10px; color: #6B6B6B; }
 
+/* UBICACION */
+.ubicacion-item { display:flex; align-items:flex-start; gap:12px; padding:12px 0; border-bottom:0.5px solid var(--gris5); }
+.ubicacion-item:last-child { border-bottom:none; }
+.ubicacion-dist { min-width:56px; text-align:center; }
+.ubicacion-dist-num { font-size:16px; font-weight:700; color:var(--rojo); line-height:1; }
+.ubicacion-dist-unit { font-size:10px; color:var(--gris4); }
+.ubicacion-nombre { font-size:14px; font-weight:600; color:var(--negro); margin-bottom:2px; }
+.ubicacion-hora { font-size:12px; color:var(--gris4); }
+.ubicacion-maps { display:inline-flex; align-items:center; gap:4px; font-size:11px; color:#1a73e8; text-decoration:none; margin-top:4px; }
+
+/* GASTOS */
+.gastos-header { background:var(--negro); border-radius:12px; padding:16px; margin-bottom:16px; }
+.gastos-dia-label { color:var(--gris4); font-size:11px; font-weight:700; letter-spacing:1px; margin-bottom:10px; }
+.gastos-barra-wrap { background:var(--gris2); border-radius:20px; height:8px; margin-bottom:10px; overflow:hidden; }
+.gastos-barra { height:8px; border-radius:20px; transition:width 0.4s; background:var(--verde); }
+.gastos-barra.warn { background:var(--amarillo); }
+.gastos-barra.over { background:var(--rojo); }
+.gastos-nums { display:flex; justify-content:space-between; align-items:baseline; }
+.gastos-gastado { color:white; font-size:22px; font-weight:700; }
+.gastos-limite { color:var(--gris4); font-size:13px; }
+.gastos-restante { font-size:12px; font-weight:600; margin-top:4px; }
+.gastos-restante.ok { color:#81C784; }
+.gastos-restante.warn { color:var(--amarillo); }
+.gastos-restante.over { color:var(--rojo); }
+
+.gastos-form { display:flex; gap:8px; margin-bottom:16px; }
+.gastos-form input[type=text] { flex:1; padding:11px 12px; background:var(--gris6); border:0.5px solid var(--gris5); border-radius:10px; font-size:14px; color:var(--negro); outline:none; }
+.gastos-form input[type=number] { width:80px; padding:11px 12px; background:var(--gris6); border:0.5px solid var(--gris5); border-radius:10px; font-size:14px; font-weight:700; color:var(--negro); outline:none; }
+.gastos-form button { padding:11px 14px; background:var(--rojo); color:white; border:none; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; }
+
+.gastos-lista { margin-bottom:20px; }
+.gasto-item { display:flex; align-items:center; gap:10px; padding:11px 0; border-bottom:0.5px solid var(--gris5); }
+.gasto-item:last-child { border-bottom:none; }
+.gasto-desc { flex:1; font-size:14px; color:var(--negro); }
+.gasto-monto { font-size:15px; font-weight:700; color:var(--negro); }
+.gasto-delete { background:none; border:none; color:var(--gris4); font-size:18px; cursor:pointer; padding:0 4px; line-height:1; }
+.gastos-empty { color:var(--gris4); font-size:13px; text-align:center; padding:20px 0; }
+
+.gastos-day-nav { display:flex; gap:8px; overflow-x:auto; margin-bottom:16px; scrollbar-width:none; }
+.gastos-day-nav::-webkit-scrollbar { display:none; }
+.gastos-day-pill { flex-shrink:0; background:var(--gris6); border:0.5px solid var(--gris5); color:var(--gris3); font-size:12px; font-weight:600; padding:5px 12px; border-radius:20px; cursor:pointer; white-space:nowrap; }
+.gastos-day-pill.active { background:var(--negro); color:white; border-color:var(--negro); }
+
 /* MAPA */
 .map-day-title { font-size: 13px; font-weight: 700; color: var(--negro); margin-bottom: 10px; letter-spacing: 0.3px; }
 .map-frame { border-radius: 12px; overflow: hidden; border: 1px solid var(--gris5); margin-bottom: 20px; }
@@ -162,6 +205,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   <button class="extra-tab" id="tab-btn-clima" onclick="setTab('clima')">Clima</button>
   <button class="extra-tab" id="tab-btn-shekel" onclick="setTab('shekel')">₪ Shekel</button>
   <button class="extra-tab" id="tab-btn-mapa" onclick="setTab('mapa')">Mapa</button>
+  <button class="extra-tab" id="tab-btn-ubicacion" onclick="setTab('ubicacion')">📍</button>
+  <button class="extra-tab" id="tab-btn-gastos" onclick="setTab('gastos')">$</button>
 </div>
 
 <div id="tab-itinerario" class="panel active">
@@ -197,6 +242,19 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
       <div class="clima-loading">Cargando...</div>
     </div>
   </div>
+</div>
+
+<div id="tab-ubicacion" class="panel">
+  <div id="ubicacionContent">
+    <p class="clima-loading">Tocá el botón para ver qué tan lejos estás de cada lugar del día.</p>
+  </div>
+  <div style="padding:0 0 16px;">
+    <button onclick="getLocation()" style="width:100%;padding:14px;background:var(--negro);color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;">Detectar mi ubicación</button>
+  </div>
+</div>
+
+<div id="tab-gastos" class="panel">
+  <div id="gastosContent"></div>
 </div>
 
 <div id="tab-mapa" class="panel">
@@ -327,6 +385,8 @@ function setTab(tab) {
   if (tab === 'clima') { if (!weatherData) loadWeather(); else renderWeatherPanelForDay(); }
   if (tab === 'shekel' && !usdIls) loadRate();
   if (tab === 'mapa') renderMap();
+  if (tab === 'ubicacion') document.getElementById('ubicacionContent').innerHTML = '<p class="clima-loading">Tocá el botón para ver qué tan lejos estás de cada lugar del día.</p>';
+  if (tab === 'gastos') { gastosActivoDia = activeDayId; renderGastos(); }
 }
 
 function setDay(id) {
@@ -611,6 +671,152 @@ renderNav();
 renderItinerario();
 loadWeather();
 loadRate();
+
+// ── UBICACIÓN ──────────────────────────────────────────────────────────────
+function getLocation() {
+  const el = document.getElementById('ubicacionContent');
+  el.innerHTML = '<p class="clima-loading">Obteniendo ubicación...</p>';
+  if (!navigator.geolocation) {
+    el.innerHTML = '<p class="clima-loading">Tu navegador no soporta geolocalización.</p>';
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(pos => {
+    renderUbicacion(pos.coords.latitude, pos.coords.longitude);
+  }, () => {
+    el.innerHTML = '<p class="clima-loading">No se pudo obtener la ubicación. Asegurate de dar permiso.</p>';
+  });
+}
+
+function haversine(lat1, lng1, lat2, lng2) {
+  const R = 6371000;
+  const dLat = (lat2-lat1)*Math.PI/180;
+  const dLng = (lng2-lng1)*Math.PI/180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function renderUbicacion(myLat, myLng) {
+  const dia = dias.find(d => d.id === activeDayId);
+  if (!dia) return;
+  const puntos = dia.bloques.filter(b => b.lat).map(b => ({
+    ...b,
+    dist: haversine(myLat, myLng, b.lat, b.lng)
+  })).sort((a,b) => a.dist - b.dist);
+
+  const formatDist = d => d < 1000 ? Math.round(d) + ' m' : (d/1000).toFixed(1) + ' km';
+  const formatMins = d => {
+    const mins = Math.round(d / 80);
+    return mins < 60 ? mins + ' min caminando' : Math.round(mins/60) + 'h ' + (mins%60) + 'min';
+  };
+
+  const html = `
+    <p style="font-size:12px;color:var(--gris4);margin-bottom:14px;">Puntos del día ordenados por distancia desde tu ubicación actual.</p>
+    <div class="gastos-lista">
+      ${puntos.map(p => `
+        <div class="ubicacion-item">
+          <div class="ubicacion-dist">
+            <div class="ubicacion-dist-num">${formatDist(p.dist)}</div>
+            <div class="ubicacion-dist-unit">${formatMins(p.dist)}</div>
+          </div>
+          <div style="flex:1">
+            <div class="ubicacion-nombre">${p.titulo}</div>
+            <div class="ubicacion-hora">${p.hora}</div>
+            <a class="ubicacion-maps" href="https://maps.google.com/?saddr=${myLat},${myLng}&daddr=${p.lat},${p.lng}&dirflg=w" target="_blank">Cómo llegar →</a>
+          </div>
+        </div>`).join('')}
+    </div>`;
+
+  document.getElementById('ubicacionContent').innerHTML = html;
+}
+
+// ── GASTOS ────────────────────────────────────────────────────────────────
+const GASTOS_KEY = 'nyc2026_gastos';
+const LIMITE_DIA = 80;
+let gastosActivoDia = activeDayId;
+
+function loadGastos() {
+  try { return JSON.parse(localStorage.getItem(GASTOS_KEY) || '{}'); } catch(e) { return {}; }
+}
+function saveGastos(g) { localStorage.setItem(GASTOS_KEY, JSON.stringify(g)); }
+
+function getGastosDia(dayId) {
+  const all = loadGastos();
+  return all[dayId] || [];
+}
+
+function addGasto() {
+  const desc = document.getElementById('gastoDesc').value.trim();
+  const monto = parseFloat(document.getElementById('gastoMonto').value);
+  if (!desc || !monto || monto <= 0) return;
+  const all = loadGastos();
+  if (!all[gastosActivoDia]) all[gastosActivoDia] = [];
+  all[gastosActivoDia].push({ desc, monto, id: Date.now() });
+  saveGastos(all);
+  document.getElementById('gastoDesc').value = '';
+  document.getElementById('gastoMonto').value = '';
+  renderGastos();
+}
+
+function deleteGasto(dayId, id) {
+  const all = loadGastos();
+  all[dayId] = (all[dayId] || []).filter(g => g.id !== id);
+  saveGastos(all);
+  renderGastos();
+}
+
+function renderGastos() {
+  const lista = getGastosDia(gastosActivoDia);
+  const total = lista.reduce((s, g) => s + g.monto, 0);
+  const pct = Math.min(100, (total / LIMITE_DIA) * 100);
+  const barraClass = pct >= 100 ? 'over' : pct >= 75 ? 'warn' : '';
+  const restante = LIMITE_DIA - total;
+  const restLabel = restante >= 0
+    ? `Te quedan $${restante.toFixed(2)} de $${LIMITE_DIA}`
+    : `Pasaste el límite por $${Math.abs(restante).toFixed(2)}`;
+  const restClass = restante < 0 ? 'over' : restante < 20 ? 'warn' : 'ok';
+
+  const diaActual = dias.find(d => d.id === gastosActivoDia);
+
+  const navHTML = '<div class="gastos-day-nav">' +
+    dias.map(d => `<button class="gastos-day-pill ${d.id===gastosActivoDia?'active':''}" onclick="setGastosDia('${d.id}')">${d.pill}</button>`).join('') +
+    '</div>';
+
+  const headerHTML = `
+    <div class="gastos-header">
+      <div class="gastos-dia-label">${diaActual ? diaActual.pill.toUpperCase() + ' — COMIDA' : ''} · LÍMITE $${LIMITE_DIA}/DÍA</div>
+      <div class="gastos-barra-wrap"><div class="gastos-barra ${barraClass}" style="width:${pct}%"></div></div>
+      <div class="gastos-nums">
+        <div>
+          <div class="gastos-gastado">$${total.toFixed(2)}</div>
+          <div class="gastos-restante ${restClass}">${restLabel}</div>
+        </div>
+        <div class="gastos-limite">de $${LIMITE_DIA}</div>
+      </div>
+    </div>`;
+
+  const formHTML = `
+    <div class="gastos-form">
+      <input type="text" id="gastoDesc" placeholder="Descripción (ej: Katz's)" maxlength="40">
+      <input type="number" id="gastoMonto" placeholder="$0" min="0" step="0.01">
+      <button onclick="addGasto()">+</button>
+    </div>`;
+
+  const listaHTML = lista.length === 0
+    ? '<p class="gastos-empty">Sin gastos cargados para este día.</p>'
+    : '<div class="gastos-lista">' + lista.map(g => `
+        <div class="gasto-item">
+          <div class="gasto-desc">${g.desc}</div>
+          <div class="gasto-monto">$${g.monto.toFixed(2)}</div>
+          <button class="gasto-delete" onclick="deleteGasto('${gastosActivoDia}',${g.id})">×</button>
+        </div>`).join('') + '</div>';
+
+  document.getElementById('gastosContent').innerHTML = navHTML + headerHTML + formHTML + listaHTML;
+}
+
+function setGastosDia(id) {
+  gastosActivoDia = id;
+  renderGastos();
+}
 </script>
 </body>
 </html>
