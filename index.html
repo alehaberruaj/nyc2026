@@ -332,6 +332,7 @@ function setTab(tab) {
 function setDay(id) {
   activeDayId = id;
   renderNav();
+  updateHeaderWeather();
   if (activeTab === 'itinerario') renderItinerario();
   else if (activeTab === 'clima') { if (!weatherData) loadWeather(); else renderWeatherPanelForDay(); }
   else if (activeTab === 'mapa') renderMap();
