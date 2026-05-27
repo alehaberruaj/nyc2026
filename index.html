@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>NYC 2026</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --rojo: #D62828;
+    --negro: #0D0D0D;
+    --gris1: #1A1A1A;
+    --gris2: #2E2E2E;
+    --gris3: #6B6B6B;
+    --gris4: #A0A0A0;
+    --gris5: #E8E6E1;
+    --gris6: #F5F3EE;
+    --blanco: #FAFAF8;
+    --amarillo: #F5C518;
+    --verde: #2E7D32;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--blanco);
+    color: var(--negro);
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .app-header {
+    background: var(--negro);
+    padding: 20px 20px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .app-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+  }
+  .app-title { color: white; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; line-height: 1; }
+  .app-title span { color: var(--rojo); }
+  .app-dates { color: var(--gris4); font-size: 12px; margin-top: 4px; letter-spacing: 0.5px; }
+  .app-badge {
+    background: var(--rojo);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+  }
+
+  /* NAV DÍAS */
+  .days-nav {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+  .days-nav::-webkit-scrollbar { display: none; }
+  .day-pill {
+    flex-shrink: 0;
+    background: var(--gris2);
+    border: none;
+    color: var(--gris4);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .day-pill.active {
+    background: var(--rojo);
+    color: white;
+  }
+  .day-pill.done {
+    background: var(--gris2);
+    color: var(--verde);
+  }
+
+  /* CONTENIDO */
+  .content { padding: 0 0 40px; }
+
+  /* DÍA */
+  .day-section { display: none; }
+  .day-section.active { display: block; }
+
+  /* HERO DEL DÍA */
+  .day-hero {
+    background: var(--negro);
+    padding: 24px 20px 20px;
+    border-bottom: 2px solid var(--rojo);
+  }
+  .day-num { color: var(--rojo); font-size: 11px; font-weight: 700; letter-spacing: 2px; margin-bottom: 4px; }
+  .day-title { color: white; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.1; margin-bottom: 6px; }
+  .day-sub { color: var(--gris4); font-size: 13px; line-height: 1.4; }
+  .day-nota {
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.06);
+    border-left: 2px solid var(--amarillo);
+    border-radius: 0 6px 6px 0;
+  }
+  .day-nota p { color: var(--gris4); font-size: 12px; line-height: 1.5; }
+  .day-nota strong { color: var(--amarillo); }
+
+  /* LISTA BLOQUES */
+  .bloques { padding: 0 20px; }
+
+  /* TRAMO CAMINANDO */
+  .tramo-walk {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 0 6px 44px;
+    color: var(--gris3);
+    font-size: 12px;
+  }
+  .tramo-walk svg { flex-shrink: 0; }
+
+  /* BLOQUE */
+  .bloque {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 0.5px solid var(--gris5);
+    cursor: pointer;
+    position: relative;
+    transition: opacity 0.2s;
+  }
+  .bloque:last-child { border-bottom: none; }
+  .bloque.checked { opacity: 0.45; }
+  .bloque-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 30px;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .bloque-hora {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--rojo);
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .bloque-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gris5);
+    border: 1.5px solid var(--gris4);
+    margin-top: 6px;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .bloque.checked .bloque-dot {
+    background: var(--verde);
+    border-color: var(--verde);
+  }
+  .bloque-body { flex: 1; min-width: 0; }
+  .bloque-titulo {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--negro);
+    margin-bottom: 3px;
+    line-height: 1.3;
+  }
+  .bloque.checked .bloque-titulo {
+    text-decoration: line-through;
+    color: var(--gris3);
+  }
+  .bloque-desc {
+    font-size: 13px;
+    color: var(--gris3);
+    line-height: 1.5;
+    margin-bottom: 6px;
+  }
+  .bloque-maps {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #1a73e8;
+    text-decoration: none;
+    padding: 3px 8px;
+    border: 0.5px solid #c5d9f7;
+    border-radius: 20px;
+    background: #f0f6ff;
+  }
+  .bloque-maps svg { flex-shrink: 0; }
+
+  /* OPCIONES (noche abierta etc) */
+  .opciones { margin-top: 8px; }
+  .opcion {
+    display: flex;
+    gap: 8px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    background: var(--gris6);
+    border-radius: 8px;
+    border-left: 2px solid var(--gris5);
+  }
+  .opcion-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--rojo);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    padding-top: 1px;
+  }
+  .opcion-text { font-size: 12px; color: var(--gris3); line-height: 1.4; }
+
+  /* EVENTO ESPECIAL */
+  .evento-especial {
+    margin: 30px 20px;
+    padding: 24px;
+    background: var(--negro);
+    border-radius: 12px;
+    text-align: center;
+  }
+  .evento-especial p { color: var(--gris4); font-size: 14px; line-height: 1.6; }
+
+  /* CHECK FEEDBACK */
+  .check-hint {
+    text-align: center;
+    color: var(--gris4);
+    font-size: 11px;
+    padding: 12px 20px 0;
+    letter-spacing: 0.3px;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="app-header-top">
+    <div>
+      <div class="app-title">NYC <span>2026</span></div>
+      <div class="app-dates">29 MAYO — 7 JUNIO</div>
+    </div>
+    <div class="app-badge">ITINERARIO</div>
+  </div>
+  <div class="days-nav" id="daysNav"></div>
+</div>
+
+<div class="content" id="content"></div>
+
+<script>
+const STORAGE_KEY = 'nyc2026_checks';
+
+const dias = [
+  {
+    id: 'v29',
+    pill: 'Vie 29',
+    num: 'DÍA 01',
+    titulo: 'El desembarco',
+    sub: 'Arte moderno & noche libre',
+    nota: { label: 'Nota', texto: 'La noche la definís en el momento según tu energía.' },
+    bloques: [
+      {
+        hora: '07:00',
+        titulo: 'Llegada e instalación',
+        desc: 'Traslado directo al Arthouse Hotel, Upper West Side. Habitación disponible desde que llegás. Instalate, refrescate, dejá las valijas.',
+        maps: 'https://maps.google.com/?q=Arthouse+Hotel+New+York',
+        mapsLabel: 'Arthouse Hotel'
+      },
+      {
+        hora: '09:00',
+        titulo: 'Irving Farm New York',
+        desc: 'Primer ritual de cafeína. 79th St entre Broadway y Amsterdam. Espresso calibrado en la barra de madera y ladrillo visto.',
+        maps: 'https://maps.google.com/?q=Irving+Farm+New+York+79th+Street',
+        mapsLabel: 'Irving Farm 79th St',
+        walk: { desde: 'Arthouse Hotel', dist: '350 m', mins: '4 min' }
+      },
+      {
+        hora: '10:00',
+        titulo: 'Times Square → Grand Central',
+        desc: 'Subte línea 1 desde la 79 hasta Times Square / 42nd St. Caminata por la calle 42: Bryant Park, Biblioteca Pública, Grand Central Terminal.',
+        maps: 'https://maps.google.com/?q=Grand+Central+Terminal+New+York',
+        mapsLabel: 'Grand Central Terminal',
+        walk: { desde: 'Biblioteca Pública → Grand Central', dist: '450 m', mins: '6 min' }
+      },
+      {
+        hora: '12:30',
+        titulo: 'MoMA',
+        desc: 'Museo de Arte Moderno, calle 53. Fotografía del s.XX, diseño industrial, vanguardias europeas y americanas.',
+        maps: 'https://maps.google.com/?q=MoMA+Museum+of+Modern+Art+New+York',
+        mapsLabel: 'MoMA',
+        walk: { desde: 'Grand Central → MoMA', dist: '1.1 km', mins: '14 min' }
+      },
+      {
+        hora: '15:30',
+        titulo: 'Siesta estratégica',
+        desc: '3–4 horas de descanso real en el Arthouse. Reseteo cerebral para el jet lag.',
+        maps: 'https://maps.google.com/?q=Arthouse+Hotel+New+York',
+        mapsLabel: 'Arthouse Hotel'
+      },
+      {
+        hora: '20:30',
+        titulo: 'Katz\'s Delicatessen',
+        desc: 'Deli judío desde 1888. El pastrami más famoso de la ciudad. Lower East Side.',
+        maps: 'https://maps.google.com/?q=Katz\'s+Delicatessen+New+York',
+        mapsLabel: 'Katz\'s Delicatessen',
+        opciones: [
+          { label: 'JAZZ A', texto: 'Village Vanguard — sótano reverencial, el jazz más alto nivel.' },
+          { label: 'JAZZ B', texto: 'Smalls Jazz Club — más relajado y económico, a tres cuadras.' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 's30',
+    pill: 'Sáb 30',
+    num: 'DÍA 02',
+    titulo: 'Chelsea & diseño',
+    sub: 'Monumentalidad y corredor cultural',
+    nota: null,
+    bloques: [
+      {
+        hora: '09:00',
+        titulo: 'Central Park a pie',
+        desc: 'Cruzás el parque en diagonal hacia el Upper East Side. Caminata arbolada de 25 min viendo el pulso matutino de la ciudad.',
+        maps: 'https://maps.google.com/?q=Central+Park+New+York',
+        mapsLabel: 'Central Park',
+        walk: { desde: 'Arthouse Hotel → Quinta Avenida', dist: '1.4 km', mins: '17 min' }
+      },
+      {
+        hora: '10:30',
+        titulo: 'Metropolitan Museum of Art',
+        desc: 'Plan enfocado: Templo de Dendur, Ala Americana, pintura europea. Al salir, ver la fachada del Guggenheim desde la calle.',
+        maps: 'https://maps.google.com/?q=Metropolitan+Museum+of+Art+New+York',
+        mapsLabel: 'The MET'
+      },
+      {
+        hora: '13:00',
+        titulo: 'Eataly Flatiron',
+        desc: 'Mercado gourmet italiano en la 23rd St y 5ta Avenida. Come en la barra. La pasta y los antipasti son el estándar.',
+        maps: 'https://maps.google.com/?q=Eataly+New+York+Flatiron',
+        mapsLabel: 'Eataly Flatiron'
+      },
+      {
+        hora: '14:30',
+        titulo: 'Poster House',
+        desc: 'El único museo del mundo dedicado al diseño de pósters. 119 W 23rd St, Chelsea. Una hora y media con calma.',
+        maps: 'https://maps.google.com/?q=Poster+House+119+W+23rd+St+New+York',
+        mapsLabel: 'Poster House',
+        walk: { desde: 'Eataly → Poster House', dist: '200 m', mins: '2 min' }
+      },
+      {
+        hora: '16:00',
+        titulo: 'High Line',
+        desc: 'Parque lineal elevado sobre las antiguas vías del tren. Entrás en la 23rd y caminás hacia el norte entre arte público y vistas del Hudson.',
+        maps: 'https://maps.google.com/?q=High+Line+New+York',
+        mapsLabel: 'High Line — entrada 23rd',
+        walk: { desde: 'Poster House → High Line', dist: '150 m', mins: '2 min' }
+      },
+      {
+        hora: '17:30',
+        titulo: 'Whitney Museum of American Art',
+        desc: 'Edificio de Renzo Piano, Meatpacking District. La terraza del último piso con vistas al Hudson vale los 10 minutos. Entrada opcional.',
+        maps: 'https://maps.google.com/?q=Whitney+Museum+of+American+Art+New+York',
+        mapsLabel: 'Whitney Museum',
+        walk: { desde: 'High Line (salida norte) → Whitney', dist: '100 m', mins: '1 min' }
+      },
+      {
+        hora: '18:00',
+        titulo: 'SoHo',
+        desc: 'Calles adoquinadas, edificios de hierro fundido, boutiques independientes y locales conceptuales. Recorrido libre.',
+        maps: 'https://maps.google.com/?q=SoHo+New+York',
+        mapsLabel: 'SoHo'
+      },
+      {
+        hora: '19:30',
+        titulo: 'Traslado al Teaneck Marriott',
+        desc: 'De vuelta al Arthouse a buscar las valijas. Traslado al Teaneck Marriott, Nueva Jersey.',
+        maps: 'https://maps.google.com/?q=Teaneck+Marriott+New+Jersey',
+        mapsLabel: 'Teaneck Marriott NJ'
+      }
+    ]
+  },
+  {
+    id: 'd31',
+    pill: 'Dom 31',
+    num: 'DÍA 03',
+    titulo: 'Jornada de evento',
+    sub: 'Nueva Jersey — día completo',
+    nota: { label: 'Nota', texto: 'Todo el día dedicado a las actividades programadas en Nueva Jersey.' },
+    bloques: [],
+    especial: true
+  },
+  {
+    id: 'l01',
+    pill: 'Lun 1',
+    num: 'DÍA 04',
+    titulo: 'El origen & la despedida',
+    sub: 'FiDi, Village y el ferry al atardecer',
+    nota: { label: 'Logística', texto: 'Mochila liviana todo el día. Habitación del Marriott disponible hasta la madrugada.' },
+    bloques: [
+      {
+        hora: '09:30',
+        titulo: 'Financial District',
+        desc: 'Wall Street y las callejuelas de trazado holandés. Oculus de Calatrava. Memorial del 9/11.',
+        maps: 'https://maps.google.com/?q=Wall+Street+New+York',
+        mapsLabel: 'Wall Street / FiDi'
+      },
+      {
+        hora: '11:30',
+        titulo: 'Greenwich Village / NoHo',
+        desc: 'Subte al norte. Los rascacielos ceden a los edificios bajos de ladrillo con escaleras de incendio exteriores.',
+        maps: 'https://maps.google.com/?q=Greenwich+Village+New+York',
+        mapsLabel: 'Greenwich Village'
+      },
+      {
+        hora: '13:00',
+        titulo: 'Almuerzo',
+        desc: 'Si no fuiste el viernes: Katz\'s Delicatessen. Si ya fuiste: Ninth Street Espresso o Abraço — espresso corto en la barra.',
+        maps: 'https://maps.google.com/?q=Ninth+Street+Espresso+New+York',
+        mapsLabel: 'Ninth Street Espresso',
+        opciones: [
+          { label: 'OPCIÓN A', texto: 'Katz\'s Delicatessen — si no fuiste el viernes.' },
+          { label: 'OPCIÓN B', texto: 'Ninth Street Espresso o Abraço — espresso corto en la barra.' }
+        ]
+      },
+      {
+        hora: '14:00',
+        titulo: 'Tenement Museum',
+        desc: 'Lower East Side. Reservar turno online antes de salir de Israel. Edificio de inmigrantes del siglo XIX conservado tal cual. Probablemente la experiencia más emotiva del viaje.',
+        maps: 'https://maps.google.com/?q=Tenement+Museum+New+York',
+        mapsLabel: 'Tenement Museum',
+        walk: { desde: 'Ninth St Espresso → Tenement Museum', dist: '1.2 km', mins: '15 min' }
+      },
+      {
+        hora: '15:30',
+        titulo: 'Strand Book Store',
+        desc: 'Kilómetros de libros nuevos y usados cerca de Union Square. Arte, diseño y catálogos visuales.',
+        maps: 'https://maps.google.com/?q=Strand+Book+Store+New+York',
+        mapsLabel: 'Strand Book Store',
+        walk: { desde: 'Tenement Museum → Strand', dist: '1.5 km', mins: '18 min' }
+      },
+      {
+        hora: '16:30',
+        titulo: 'McNally Jackson SoHo',
+        desc: 'Librería independiente espectacular. Ideal para libros de diseño, arte y catálogos visuales.',
+        maps: 'https://maps.google.com/?q=McNally+Jackson+Books+SoHo+New+York',
+        mapsLabel: 'McNally Jackson SoHo',
+        walk: { desde: 'Strand → McNally Jackson', dist: '1.1 km', mins: '13 min' }
+      },
+      {
+        hora: '18:30',
+        titulo: 'Staten Island Ferry',
+        desc: 'Salida entre 18:30 y 19:00 para ver el skyline encenderse sobre el agua. El sol se pone cerca de las 20:15. Gratuito.',
+        maps: 'https://maps.google.com/?q=Staten+Island+Ferry+Terminal+New+York',
+        mapsLabel: 'Whitehall Ferry Terminal'
+      },
+      {
+        hora: '20:00',
+        titulo: 'Última cena en Manhattan',
+        desc: 'Cena de despedida en el Lower East Side o Chinatown.',
+        maps: 'https://maps.google.com/?q=Lower+East+Side+New+York',
+        mapsLabel: 'Lower East Side'
+      },
+      {
+        hora: '22:30',
+        titulo: 'Retorno al Teaneck Marriott',
+        desc: 'Armar valija, ducha caliente, descanso antes del vuelo largo.',
+        maps: 'https://maps.google.com/?q=Teaneck+Marriott+New+Jersey',
+        mapsLabel: 'Teaneck Marriott NJ'
+      }
+    ]
+  },
+  {
+    id: 'm02',
+    pill: 'Mar 2',
+    num: 'DÍA 05',
+    titulo: 'Salida',
+    sub: 'Vuelo de regreso',
+    nota: null,
+    bloques: [
+      {
+        hora: '02:00 AM',
+        titulo: 'Salida hacia JFK',
+        desc: 'Auto desde el lobby del Teaneck Marriott directo al aeropuerto.',
+        maps: 'https://maps.google.com/?q=John+F+Kennedy+International+Airport',
+        mapsLabel: 'JFK Airport'
+      }
+    ]
+  },
+  {
+    id: 'd07',
+    pill: 'Dom 7',
+    num: 'DÍA 06',
+    titulo: 'Escala exprés',
+    sub: '11 horas en JFK — el último impacto',
+    nota: { label: 'Logística', texto: 'Verificar lockers en la terminal antes de salir. Alternativa: Bounce o Stasher cerca del aeropuerto.' },
+    bloques: [
+      {
+        hora: '16:05',
+        titulo: 'Aterrizaje en JFK',
+        desc: 'El avión toca pista.',
+        maps: 'https://maps.google.com/?q=JFK+Airport+Terminal',
+        mapsLabel: 'JFK Airport'
+      },
+      {
+        hora: '16:05',
+        titulo: 'Logística de escala',
+        desc: 'Migraciones / Aduana. Dejar equipaje de mano en lockers de la terminal.',
+        maps: 'https://maps.google.com/?q=JFK+Airport',
+        mapsLabel: 'JFK Airport'
+      },
+      {
+        hora: '17:30',
+        titulo: 'AirTrain + LIRR',
+        desc: 'AirTrain hasta Jamaica (25 min). LIRR directo a Grand Central Madison (20 min).',
+        maps: 'https://maps.google.com/?q=Grand+Central+Madison+New+York',
+        mapsLabel: 'Grand Central Madison'
+      },
+      {
+        hora: '18:30',
+        titulo: 'Grand Central → Chrysler Building',
+        desc: 'Nave central de Grand Central en hora pico. Desvío de 5 min por Lexington para ver el Chrysler Building de cerca. Quinta Avenida.',
+        maps: 'https://maps.google.com/?q=Chrysler+Building+New+York',
+        mapsLabel: 'Chrysler Building',
+        walk: { desde: 'Grand Central → Chrysler Building', dist: '350 m', mins: '4 min' }
+      },
+      {
+        hora: '20:00',
+        titulo: 'Times Square de noche',
+        desc: 'Las escaleras rojas. El último bombardeo de luz y pantallas LED. El impacto neoyorquino definitivo.',
+        maps: 'https://maps.google.com/?q=Times+Square+New+York',
+        mapsLabel: 'Times Square',
+        walk: { desde: 'Chrysler Building → Times Square', dist: '900 m', mins: '11 min' }
+      },
+      {
+        hora: '21:00',
+        titulo: 'Última hamburguesa o pizza',
+        desc: 'Hell\'s Kitchen o alrededores. Algo potente en la barra antes del vuelo.',
+        maps: 'https://maps.google.com/?q=Hell\'s+Kitchen+New+York',
+        mapsLabel: 'Hell\'s Kitchen'
+      },
+      {
+        hora: '22:00',
+        titulo: 'Retorno a JFK',
+        desc: 'LIRR + AirTrain. Llegás con 3 horas de margen. Vuelo a las 02:00 AM.',
+        maps: 'https://maps.google.com/?q=JFK+Airport',
+        mapsLabel: 'JFK Airport'
+      }
+    ]
+  }
+];
+
+function loadChecks() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
+  catch(e) { return {}; }
+}
+
+function saveChecks(checks) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(checks));
+}
+
+let checks = loadChecks();
+let activeDayId = dias[0].id;
+
+function toggleCheck(dayId, idx) {
+  const key = dayId + '_' + idx;
+  checks[key] = !checks[key];
+  saveChecks(checks);
+  render();
+}
+
+function isChecked(dayId, idx) {
+  return !!checks[dayId + '_' + idx];
+}
+
+function buildWalkHTML(walk) {
+  if (!walk) return '';
+  return `<div class="tramo-walk">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><path d="M8 12l2-4 2 1 2-4"/><path d="M7 20l2-6h6l2 6"/></svg>
+    <span>${walk.desde} · <strong>${walk.dist}</strong> · ${walk.mins} caminando</span>
+  </div>`;
+}
+
+function buildOpcionesHTML(opciones) {
+  if (!opciones || !opciones.length) return '';
+  return '<div class="opciones">' + opciones.map(o =>
+    `<div class="opcion">
+      <span class="opcion-label">${o.label}</span>
+      <span class="opcion-text">${o.texto}</span>
+    </div>`
+  ).join('') + '</div>';
+}
+
+function buildBloqueHTML(dayId, bloque, idx) {
+  const checked = isChecked(dayId, idx);
+  return `
+    ${bloque.walk ? buildWalkHTML(bloque.walk) : ''}
+    <div class="bloque ${checked ? 'checked' : ''}" onclick="toggleCheck('${dayId}', ${idx})">
+      <div class="bloque-left">
+        <div class="bloque-hora">${bloque.hora.replace(':', '<br>')}</div>
+        <div class="bloque-dot"></div>
+      </div>
+      <div class="bloque-body">
+        <div class="bloque-titulo">${bloque.titulo}</div>
+        <div class="bloque-desc">${bloque.desc}</div>
+        ${bloque.opciones ? buildOpcionesHTML(bloque.opciones) : ''}
+        <a class="bloque-maps" href="${bloque.maps}" target="_blank" onclick="event.stopPropagation()">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          ${bloque.mapsLabel}
+        </a>
+      </div>
+    </div>`;
+}
+
+function render() {
+  const nav = document.getElementById('daysNav');
+  const content = document.getElementById('content');
+
+  nav.innerHTML = dias.map(d => {
+    const isActive = d.id === activeDayId;
+    return `<button class="day-pill ${isActive ? 'active' : ''}" onclick="setDay('${d.id}')">${d.pill}</button>`;
+  }).join('');
+
+  content.innerHTML = dias.map(d => {
+    const isActive = d.id === activeDayId;
+    const notaHTML = d.nota ? `
+      <div class="day-nota">
+        <p><strong>${d.nota.label}:</strong> ${d.nota.texto}</p>
+      </div>` : '';
+
+    const bloquesHTML = d.especial
+      ? `<div class="evento-especial"><p>${d.nota ? d.nota.texto : ''}</p></div>`
+      : `<p class="check-hint">Tocá un bloque para marcarlo como hecho</p>
+         <div class="bloques">${d.bloques.map((b, i) => buildBloqueHTML(d.id, b, i)).join('')}</div>`;
+
+    return `
+      <div class="day-section ${isActive ? 'active' : ''}" id="day-${d.id}">
+        <div class="day-hero">
+          <div class="day-num">${d.num}</div>
+          <div class="day-title">${d.titulo}</div>
+          <div class="day-sub">${d.sub}</div>
+          ${d.nota && !d.especial ? notaHTML : ''}
+        </div>
+        ${bloquesHTML}
+      </div>`;
+  }).join('');
+}
+
+function setDay(id) {
+  activeDayId = id;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+render();
+</script>
+</body>
+</html>
