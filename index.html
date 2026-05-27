@@ -7,242 +7,123 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>NYC 2026</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  :root {
-    --rojo: #D62828;
-    --negro: #0D0D0D;
-    --gris1: #1A1A1A;
-    --gris2: #2E2E2E;
-    --gris3: #6B6B6B;
-    --gris4: #A0A0A0;
-    --gris5: #E8E6E1;
-    --gris6: #F5F3EE;
-    --blanco: #FAFAF8;
-    --amarillo: #F5C518;
-    --verde: #2E7D32;
-  }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--blanco);
-    color: var(--negro);
-    max-width: 480px;
-    margin: 0 auto;
-    min-height: 100vh;
-  }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --rojo: #D62828; --negro: #0D0D0D; --gris1: #1A1A1A; --gris2: #2E2E2E;
+  --gris3: #6B6B6B; --gris4: #A0A0A0; --gris5: #E8E6E1; --gris6: #F5F3EE;
+  --blanco: #FAFAF8; --amarillo: #F5C518; --verde: #2E7D32;
+}
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--blanco); color: var(--negro); max-width: 480px; margin: 0 auto; min-height: 100vh; }
 
-  /* HEADER */
-  .app-header {
-    background: var(--negro);
-    padding: 20px 20px 16px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .app-header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 14px;
-  }
-  .app-title { color: white; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; line-height: 1; }
-  .app-title span { color: var(--rojo); }
-  .app-dates { color: var(--gris4); font-size: 12px; margin-top: 4px; letter-spacing: 0.5px; }
-  .app-badge {
-    background: var(--rojo);
-    color: white;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 20px;
-    letter-spacing: 0.3px;
-  }
+.app-header { background: var(--negro); padding: 16px 20px 14px; position: sticky; top: 0; z-index: 100; }
+.app-header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.app-title { color: white; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; line-height: 1; }
+.app-title span { color: var(--rojo); }
+.app-dates { color: var(--gris4); font-size: 11px; margin-top: 3px; letter-spacing: 0.5px; }
 
-  /* NAV DÍAS */
-  .days-nav {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding-bottom: 2px;
-    scrollbar-width: none;
-  }
-  .days-nav::-webkit-scrollbar { display: none; }
-  .day-pill {
-    flex-shrink: 0;
-    background: var(--gris2);
-    border: none;
-    color: var(--gris4);
-    font-size: 12px;
-    font-weight: 500;
-    padding: 6px 12px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
-  .day-pill.active {
-    background: var(--rojo);
-    color: white;
-  }
-  .day-pill.done {
-    background: var(--gris2);
-    color: var(--verde);
-  }
+.header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.weather-badge { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.08); border-radius: 20px; padding: 4px 10px; cursor: pointer; border: none; color: white; font-size: 12px; font-weight: 500; }
+.weather-icon { font-size: 14px; }
 
-  /* CONTENIDO */
-  .content { padding: 0 0 40px; }
+.days-nav { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+.days-nav::-webkit-scrollbar { display: none; }
+.day-pill { flex-shrink: 0; background: var(--gris2); border: none; color: var(--gris4); font-size: 12px; font-weight: 500; padding: 5px 11px; border-radius: 20px; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+.day-pill.active { background: var(--rojo); color: white; }
 
-  /* DÍA */
-  .day-section { display: none; }
-  .day-section.active { display: block; }
+.content { padding: 0 0 40px; }
+.day-section { display: none; }
+.day-section.active { display: block; }
 
-  /* HERO DEL DÍA */
-  .day-hero {
-    background: var(--negro);
-    padding: 24px 20px 20px;
-    border-bottom: 2px solid var(--rojo);
-  }
-  .day-num { color: var(--rojo); font-size: 11px; font-weight: 700; letter-spacing: 2px; margin-bottom: 4px; }
-  .day-title { color: white; font-size: 26px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.1; margin-bottom: 6px; }
-  .day-sub { color: var(--gris4); font-size: 13px; line-height: 1.4; }
-  .day-nota {
-    margin-top: 14px;
-    padding: 10px 14px;
-    background: rgba(255,255,255,0.06);
-    border-left: 2px solid var(--amarillo);
-    border-radius: 0 6px 6px 0;
-  }
-  .day-nota p { color: var(--gris4); font-size: 12px; line-height: 1.5; }
-  .day-nota strong { color: var(--amarillo); }
+.day-hero { background: var(--negro); padding: 22px 20px 18px; border-bottom: 2px solid var(--rojo); }
+.day-num { color: var(--rojo); font-size: 11px; font-weight: 700; letter-spacing: 2px; margin-bottom: 4px; }
+.day-title { color: white; font-size: 24px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.1; margin-bottom: 5px; }
+.day-sub { color: var(--gris4); font-size: 13px; line-height: 1.4; }
+.day-nota { margin-top: 12px; padding: 10px 14px; background: rgba(255,255,255,0.06); border-left: 2px solid var(--amarillo); border-radius: 0 6px 6px 0; }
+.day-nota p { color: var(--gris4); font-size: 12px; line-height: 1.5; }
+.day-nota strong { color: var(--amarillo); }
 
-  /* LISTA BLOQUES */
-  .bloques { padding: 0 20px; }
+.day-weather { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding: 10px 14px; background: rgba(255,255,255,0.05); border-radius: 8px; }
+.day-weather-icon { font-size: 22px; }
+.day-weather-temps { color: white; font-size: 14px; font-weight: 600; }
+.day-weather-desc { color: var(--gris4); font-size: 12px; margin-top: 1px; }
+.day-weather-rain { margin-left: auto; text-align: right; }
+.day-weather-rain-pct { color: #64B5F6; font-size: 13px; font-weight: 600; }
+.day-weather-rain-label { color: var(--gris4); font-size: 10px; }
 
-  /* TRAMO CAMINANDO */
-  .tramo-walk {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 0 6px 44px;
-    color: var(--gris3);
-    font-size: 12px;
-  }
-  .tramo-walk svg { flex-shrink: 0; }
+.check-hint { text-align: center; color: var(--gris4); font-size: 11px; padding: 12px 20px 0; letter-spacing: 0.3px; }
+.bloques { padding: 0 20px; }
 
-  /* BLOQUE */
-  .bloque {
-    display: flex;
-    gap: 14px;
-    padding: 14px 0;
-    border-bottom: 0.5px solid var(--gris5);
-    cursor: pointer;
-    position: relative;
-    transition: opacity 0.2s;
-  }
-  .bloque:last-child { border-bottom: none; }
-  .bloque.checked { opacity: 0.45; }
-  .bloque-left {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 30px;
-    flex-shrink: 0;
-    padding-top: 2px;
-  }
-  .bloque-hora {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--rojo);
-    letter-spacing: 0.3px;
-    white-space: nowrap;
-    text-align: center;
-    line-height: 1.2;
-  }
-  .bloque-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--gris5);
-    border: 1.5px solid var(--gris4);
-    margin-top: 6px;
-    flex-shrink: 0;
-    transition: all 0.2s;
-  }
-  .bloque.checked .bloque-dot {
-    background: var(--verde);
-    border-color: var(--verde);
-  }
-  .bloque-body { flex: 1; min-width: 0; }
-  .bloque-titulo {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--negro);
-    margin-bottom: 3px;
-    line-height: 1.3;
-  }
-  .bloque.checked .bloque-titulo {
-    text-decoration: line-through;
-    color: var(--gris3);
-  }
-  .bloque-desc {
-    font-size: 13px;
-    color: var(--gris3);
-    line-height: 1.5;
-    margin-bottom: 6px;
-  }
-  .bloque-maps {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 11px;
-    font-weight: 500;
-    color: #1a73e8;
-    text-decoration: none;
-    padding: 3px 8px;
-    border: 0.5px solid #c5d9f7;
-    border-radius: 20px;
-    background: #f0f6ff;
-  }
-  .bloque-maps svg { flex-shrink: 0; }
+.tramo-walk { display: flex; align-items: center; gap: 8px; padding: 10px 0 6px 44px; color: var(--gris3); font-size: 12px; }
+.tramo-walk svg { flex-shrink: 0; }
 
-  /* OPCIONES (noche abierta etc) */
-  .opciones { margin-top: 8px; }
-  .opcion {
-    display: flex;
-    gap: 8px;
-    padding: 8px 10px;
-    margin-bottom: 6px;
-    background: var(--gris6);
-    border-radius: 8px;
-    border-left: 2px solid var(--gris5);
-  }
-  .opcion-label {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--rojo);
-    letter-spacing: 0.5px;
-    white-space: nowrap;
-    padding-top: 1px;
-  }
-  .opcion-text { font-size: 12px; color: var(--gris3); line-height: 1.4; }
+.bloque { display: flex; gap: 14px; padding: 14px 0; border-bottom: 0.5px solid var(--gris5); cursor: pointer; position: relative; transition: opacity 0.2s; }
+.bloque:last-child { border-bottom: none; }
+.bloque.checked { opacity: 0.4; }
+.bloque-left { display: flex; flex-direction: column; align-items: center; width: 30px; flex-shrink: 0; padding-top: 2px; }
+.bloque-hora { font-size: 11px; font-weight: 700; color: var(--rojo); letter-spacing: 0.3px; white-space: nowrap; text-align: center; line-height: 1.2; }
+.bloque-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gris5); border: 1.5px solid var(--gris4); margin-top: 6px; flex-shrink: 0; transition: all 0.2s; }
+.bloque.checked .bloque-dot { background: var(--verde); border-color: var(--verde); }
+.bloque-body { flex: 1; min-width: 0; }
+.bloque-titulo { font-size: 15px; font-weight: 600; color: var(--negro); margin-bottom: 3px; line-height: 1.3; }
+.bloque.checked .bloque-titulo { text-decoration: line-through; color: var(--gris3); }
+.bloque-desc { font-size: 13px; color: var(--gris3); line-height: 1.5; margin-bottom: 6px; }
+.bloque-maps { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; color: #1a73e8; text-decoration: none; padding: 3px 8px; border: 0.5px solid #c5d9f7; border-radius: 20px; background: #f0f6ff; }
 
-  /* EVENTO ESPECIAL */
-  .evento-especial {
-    margin: 30px 20px;
-    padding: 24px;
-    background: var(--negro);
-    border-radius: 12px;
-    text-align: center;
-  }
-  .evento-especial p { color: var(--gris4); font-size: 14px; line-height: 1.6; }
+.opciones { margin-top: 8px; }
+.opcion { display: flex; gap: 8px; padding: 8px 10px; margin-bottom: 6px; background: var(--gris6); border-radius: 8px; border-left: 2px solid var(--gris5); }
+.opcion-label { font-size: 11px; font-weight: 700; color: var(--rojo); letter-spacing: 0.5px; white-space: nowrap; padding-top: 1px; }
+.opcion-text { font-size: 12px; color: var(--gris3); line-height: 1.4; }
 
-  /* CHECK FEEDBACK */
-  .check-hint {
-    text-align: center;
-    color: var(--gris4);
-    font-size: 11px;
-    padding: 12px 20px 0;
-    letter-spacing: 0.3px;
-  }
+.evento-especial { margin: 30px 20px; padding: 24px; background: var(--negro); border-radius: 12px; text-align: center; }
+.evento-especial p { color: var(--gris4); font-size: 14px; line-height: 1.6; }
+
+/* TABS EXTRA */
+.extra-tabs { display: flex; border-bottom: 1px solid var(--gris5); background: white; position: sticky; top: 0; z-index: 90; }
+.extra-tab { flex: 1; padding: 11px 0; font-size: 12px; font-weight: 600; color: var(--gris4); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; letter-spacing: 0.3px; transition: all 0.15s; }
+.extra-tab.active { color: var(--rojo); border-bottom-color: var(--rojo); }
+
+/* PANEL CLIMA */
+.panel { display: none; padding: 16px 20px; }
+.panel.active { display: block; }
+
+.clima-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.clima-card { background: var(--negro); border-radius: 12px; padding: 14px; }
+.clima-card-fecha { color: var(--gris4); font-size: 11px; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 8px; }
+.clima-card-icon { font-size: 28px; margin-bottom: 6px; }
+.clima-card-temps { color: white; font-size: 16px; font-weight: 700; }
+.clima-card-temps span { color: var(--gris4); font-size: 13px; font-weight: 400; }
+.clima-card-desc { color: var(--gris4); font-size: 11px; margin-top: 4px; line-height: 1.3; }
+.clima-card-rain { display: flex; align-items: center; gap: 4px; margin-top: 6px; color: #64B5F6; font-size: 11px; font-weight: 600; }
+.clima-loading { text-align: center; color: var(--gris4); font-size: 13px; padding: 30px 0; }
+
+/* CONVERTIDOR */
+.conv-section { margin-bottom: 20px; }
+.conv-label { font-size: 11px; font-weight: 700; color: var(--gris4); letter-spacing: 1px; margin-bottom: 10px; }
+.conv-rate-bar { background: var(--negro); border-radius: 10px; padding: 12px 16px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+.conv-rate-num { color: white; font-size: 18px; font-weight: 700; }
+.conv-rate-label { color: var(--gris4); font-size: 12px; }
+.conv-updated { color: var(--gris4); font-size: 10px; margin-top: 4px; }
+.conv-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.conv-field label { display: block; font-size: 11px; font-weight: 700; color: var(--gris4); letter-spacing: 0.5px; margin-bottom: 6px; }
+.conv-field input { width: 100%; padding: 12px 14px; background: var(--negro); border: none; border-radius: 10px; color: white; font-size: 18px; font-weight: 700; outline: none; }
+.conv-field input::placeholder { color: var(--gris2); }
+.conv-tips { margin-top: 16px; }
+.conv-tip-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 0.5px solid var(--gris5); }
+.conv-tip-row:last-child { border-bottom: none; }
+.conv-tip-usd { font-size: 14px; color: var(--gris3); }
+.conv-tip-ils { font-size: 14px; font-weight: 600; color: var(--negro); }
+
+/* MAPA */
+.map-day-title { font-size: 13px; font-weight: 700; color: var(--negro); margin-bottom: 10px; letter-spacing: 0.3px; }
+.map-frame { border-radius: 12px; overflow: hidden; border: 1px solid var(--gris5); margin-bottom: 20px; }
+.map-frame iframe { width: 100%; height: 280px; border: none; display: block; }
+.map-points { margin-bottom: 6px; }
+.map-point { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--gris5); }
+.map-point:last-child { border-bottom: none; }
+.map-point-num { width: 20px; height: 20px; border-radius: 50%; background: var(--rojo); color: white; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.map-point-name { font-size: 13px; color: var(--negro); font-weight: 500; }
+.map-point-hora { font-size: 11px; color: var(--gris4); margin-top: 1px; }
+.map-select { width: 100%; padding: 10px 14px; background: var(--negro); border: none; border-radius: 10px; color: white; font-size: 14px; margin-bottom: 16px; outline: none; appearance: none; }
 </style>
 </head>
 <body>
@@ -253,339 +134,320 @@
       <div class="app-title">NYC <span>2026</span></div>
       <div class="app-dates">29 MAYO — 7 JUNIO</div>
     </div>
-    <div class="app-badge">ITINERARIO</div>
+    <div class="header-right">
+      <div class="weather-badge" id="headerWeather">
+        <span class="weather-icon" id="headerIcon">⏳</span>
+        <span id="headerTemp">—</span>
+      </div>
+    </div>
   </div>
   <div class="days-nav" id="daysNav"></div>
 </div>
 
-<div class="content" id="content"></div>
+<div class="extra-tabs">
+  <button class="extra-tab active" onclick="setTab('itinerario')">Itinerario</button>
+  <button class="extra-tab" onclick="setTab('clima')">Clima</button>
+  <button class="extra-tab" onclick="setTab('shekel')">₪ Shekel</button>
+  <button class="extra-tab" onclick="setTab('mapa')">Mapa</button>
+</div>
+
+<div id="tab-itinerario" class="panel active">
+  <div id="content"></div>
+</div>
+
+<div id="tab-clima" class="panel">
+  <div id="climaContent"><p class="clima-loading">Cargando pronóstico...</p></div>
+</div>
+
+<div id="tab-shekel" class="panel">
+  <div class="conv-section">
+    <div class="conv-label">TIPO DE CAMBIO</div>
+    <div class="conv-rate-bar">
+      <div>
+        <div class="conv-rate-num">1 USD = <span id="rateNum">—</span> ₪</div>
+        <div class="conv-updated" id="rateUpdated">Cargando...</div>
+      </div>
+    </div>
+    <div class="conv-label">CONVERTIR</div>
+    <div class="conv-inputs">
+      <div class="conv-field">
+        <label>USD $</label>
+        <input type="number" id="inputUSD" placeholder="0" oninput="convertFrom('usd')">
+      </div>
+      <div class="conv-field">
+        <label>ILS ₪</label>
+        <input type="number" id="inputILS" placeholder="0" oninput="convertFrom('ils')">
+      </div>
+    </div>
+    <div class="conv-label">REFERENCIA RÁPIDA</div>
+    <div class="conv-tips" id="convTips">
+      <div class="clima-loading">Cargando...</div>
+    </div>
+  </div>
+</div>
+
+<div id="tab-mapa" class="panel">
+  <div class="conv-label">ELEGÍ UN DÍA</div>
+  <select class="map-select" id="mapSelect" onchange="renderMap()"></select>
+  <div id="mapContent"></div>
+</div>
 
 <script>
-const STORAGE_KEY = 'nyc2026_checks';
+const STORAGE_KEY = 'nyc2026_checks_v2';
 
 const dias = [
   {
-    id: 'v29',
-    pill: 'Vie 29',
-    num: 'DÍA 01',
-    titulo: 'El desembarco',
-    sub: 'Arte moderno & noche libre',
+    id: 'v29', pill: 'Vie 29', num: 'DÍA 01', titulo: 'El desembarco',
+    sub: 'Arte moderno & noche libre', weatherDate: '2026-05-29',
     nota: { label: 'Nota', texto: 'La noche la definís en el momento según tu energía.' },
     bloques: [
-      {
-        hora: '07:00',
-        titulo: 'Llegada e instalación',
-        desc: 'Traslado directo al Arthouse Hotel, Upper West Side. Habitación disponible desde que llegás. Instalate, refrescate, dejá las valijas.',
-        maps: 'https://maps.google.com/?q=Arthouse+Hotel+New+York',
-        mapsLabel: 'Arthouse Hotel'
-      },
-      {
-        hora: '09:00',
-        titulo: 'Irving Farm New York',
-        desc: 'Primer ritual de cafeína. 79th St entre Broadway y Amsterdam. Espresso calibrado en la barra de madera y ladrillo visto.',
-        maps: 'https://maps.google.com/?q=Irving+Farm+New+York+79th+Street',
-        mapsLabel: 'Irving Farm 79th St',
-        walk: { desde: 'Arthouse Hotel', dist: '350 m', mins: '4 min' }
-      },
-      {
-        hora: '10:00',
-        titulo: 'Times Square → Grand Central',
-        desc: 'Subte línea 1 desde la 79 hasta Times Square / 42nd St. Caminata por la calle 42: Bryant Park, Biblioteca Pública, Grand Central Terminal.',
-        maps: 'https://maps.google.com/?q=Grand+Central+Terminal+New+York',
-        mapsLabel: 'Grand Central Terminal',
-        walk: { desde: 'Biblioteca Pública → Grand Central', dist: '450 m', mins: '6 min' }
-      },
-      {
-        hora: '12:30',
-        titulo: 'MoMA',
-        desc: 'Museo de Arte Moderno, calle 53. Fotografía del s.XX, diseño industrial, vanguardias europeas y americanas.',
-        maps: 'https://maps.google.com/?q=MoMA+Museum+of+Modern+Art+New+York',
-        mapsLabel: 'MoMA',
-        walk: { desde: 'Grand Central → MoMA', dist: '1.1 km', mins: '14 min' }
-      },
-      {
-        hora: '15:30',
-        titulo: 'Siesta estratégica',
-        desc: '3–4 horas de descanso real en el Arthouse. Reseteo cerebral para el jet lag.',
-        maps: 'https://maps.google.com/?q=Arthouse+Hotel+New+York',
-        mapsLabel: 'Arthouse Hotel'
-      },
-      {
-        hora: '20:30',
-        titulo: 'Cena — Lower East Side',
-        desc: 'Tres opciones con onda para la primera noche. Todas en el mismo barrio.',
-        maps: 'https://maps.google.com/?q=Lower+East+Side+New+York',
-        mapsLabel: 'Lower East Side',
-        opciones: [
-          { label: 'OPCIÓN 1', texto: 'Katz\'s Delicatessen — deli judío desde 1888. El pastrami más famoso de la ciudad. Ruidoso, enorme, clásico.' },
-          { label: 'OPCIÓN 2', texto: 'Russ & Daughters Café — desde 1914. El mejor salmón ahumado y bagels de NYC. Más tranquilo y refinado.' },
-          { label: 'OPCIÓN 3', texto: 'The Odeon (Tribeca) — bistró clásico desde 1980. Frecuentado por artistas y escritores. Ambiente nocturno perfecto.' },
-          { label: 'DESPUÉS', texto: 'Smalls Jazz Club (West Village) o Ear Inn (Spring St, uno de los bares más antiguos de NYC, luz baja, espíritu bohemio).' }
+      { hora:'07:00', titulo:'Llegada e instalación', desc:'Traslado directo al Arthouse Hotel, Upper West Side. Habitación disponible desde que llegás.', maps:'https://maps.google.com/?q=Arthouse+Hotel+New+York', mapsLabel:'Arthouse Hotel', lat:40.7838, lng:-73.9803 },
+      { hora:'09:00', titulo:'Irving Farm New York', desc:'Primer ritual de cafeína. 79th St entre Broadway y Amsterdam. Espresso calibrado en la barra de ladrillo visto.', maps:'https://maps.google.com/?q=Irving+Farm+New+York+79th+Street', mapsLabel:'Irving Farm 79th St', lat:40.7826, lng:-73.9803, walk:{desde:'Arthouse Hotel',dist:'350 m',mins:'4 min'} },
+      { hora:'10:00', titulo:'Times Square → Grand Central', desc:'Subte línea 1 desde la 79. Caminata por la calle 42: Bryant Park, Biblioteca Pública, Grand Central Terminal.', maps:'https://maps.google.com/?q=Grand+Central+Terminal+New+York', mapsLabel:'Grand Central Terminal', lat:40.7527, lng:-73.9772, walk:{desde:'Biblioteca Pública → Grand Central',dist:'450 m',mins:'6 min'} },
+      { hora:'12:30', titulo:'MoMA', desc:'Calle 53. Fotografía del s.XX, diseño industrial, vanguardias europeas y americanas.', maps:'https://maps.google.com/?q=MoMA+Museum+of+Modern+Art+New+York', mapsLabel:'MoMA', lat:40.7614, lng:-73.9776, walk:{desde:'Grand Central → MoMA',dist:'1.1 km',mins:'14 min'} },
+      { hora:'15:30', titulo:'Siesta estratégica', desc:'3–4 horas de descanso real en el Arthouse. Reseteo para el jet lag.', maps:'https://maps.google.com/?q=Arthouse+Hotel+New+York', mapsLabel:'Arthouse Hotel', lat:40.7838, lng:-73.9803 },
+      { hora:'20:30', titulo:'Cena — Lower East Side', desc:'Tres opciones con onda para la primera noche. Todas en el mismo barrio.', maps:'https://maps.google.com/?q=Lower+East+Side+New+York', mapsLabel:'Lower East Side', lat:40.7157, lng:-73.9863,
+        opciones:[
+          {label:'OPCIÓN 1', texto:"Katz's Delicatessen — deli judío desde 1888. El pastrami más famoso. Pedí pastrami on rye. Dejá $2 en el mostrador al carnicero."},
+          {label:'OPCIÓN 2', texto:'Russ & Daughters Café — desde 1914. El mejor salmón ahumado y bagels de NYC. Más tranquilo y refinado.'},
+          {label:'OPCIÓN 3', texto:'The Odeon (Tribeca) — bistró clásico desde 1980. Artistas y escritores. Ambiente nocturno perfecto.'},
+          {label:'DESPUÉS', texto:'Smalls Jazz Club (West Village) o Ear Inn (Spring St, uno de los bares más antiguos de NYC, luz baja).'}
         ]
       }
     ]
   },
   {
-    id: 's30',
-    pill: 'Sáb 30',
-    num: 'DÍA 02',
-    titulo: 'Chelsea & diseño',
-    sub: 'Monumentalidad y corredor cultural',
-    nota: null,
+    id: 's30', pill: 'Sáb 30', num: 'DÍA 02', titulo: 'Chelsea & diseño',
+    sub: 'Monumentalidad y corredor cultural', weatherDate: '2026-05-30', nota: null,
     bloques: [
-      {
-        hora: '09:00',
-        titulo: 'Central Park a pie',
-        desc: 'Cruzás el parque en diagonal hacia el Upper East Side. Caminata arbolada de 25 min viendo el pulso matutino de la ciudad.',
-        maps: 'https://maps.google.com/?q=Central+Park+New+York',
-        mapsLabel: 'Central Park',
-        walk: { desde: 'Arthouse Hotel → Quinta Avenida', dist: '1.4 km', mins: '17 min' }
-      },
-      {
-        hora: '10:30',
-        titulo: 'Metropolitan Museum of Art',
-        desc: 'Plan enfocado: Templo de Dendur, Ala Americana, pintura europea. Al salir, ver la fachada del Guggenheim desde la calle.',
-        maps: 'https://maps.google.com/?q=Metropolitan+Museum+of+Art+New+York',
-        mapsLabel: 'The MET'
-      },
-      {
-        hora: '13:00',
-        titulo: 'Eataly Flatiron',
-        desc: 'Mercado gourmet italiano en la 23rd St y 5ta Avenida. Come en la barra. La pasta y los antipasti son el estándar.',
-        maps: 'https://maps.google.com/?q=Eataly+New+York+Flatiron',
-        mapsLabel: 'Eataly Flatiron'
-      },
-      {
-        hora: '14:30',
-        titulo: 'Poster House',
-        desc: 'El único museo del mundo dedicado al diseño de pósters. 119 W 23rd St, Chelsea. Una hora y media con calma.',
-        maps: 'https://maps.google.com/?q=Poster+House+119+W+23rd+St+New+York',
-        mapsLabel: 'Poster House',
-        walk: { desde: 'Eataly → Poster House', dist: '200 m', mins: '2 min' }
-      },
-      {
-        hora: '16:00',
-        titulo: 'High Line',
-        desc: 'Parque lineal elevado sobre las antiguas vías del tren. Entrás en la 23rd y caminás hacia el norte entre arte público y vistas del Hudson.',
-        maps: 'https://maps.google.com/?q=High+Line+New+York',
-        mapsLabel: 'High Line — entrada 23rd',
-        walk: { desde: 'Poster House → High Line', dist: '150 m', mins: '2 min' }
-      },
-      {
-        hora: '17:30',
-        titulo: 'Whitney Museum of American Art',
-        desc: 'Edificio de Renzo Piano, Meatpacking District. La terraza del último piso con vistas al Hudson vale los 10 minutos. Entrada opcional.',
-        maps: 'https://maps.google.com/?q=Whitney+Museum+of+American+Art+New+York',
-        mapsLabel: 'Whitney Museum',
-        walk: { desde: 'High Line (salida norte) → Whitney', dist: '100 m', mins: '1 min' }
-      },
-      {
-        hora: '18:00',
-        titulo: 'SoHo',
-        desc: 'Calles adoquinadas, edificios de hierro fundido, boutiques independientes y locales conceptuales. Recorrido libre.',
-        maps: 'https://maps.google.com/?q=SoHo+New+York',
-        mapsLabel: 'SoHo'
-      },
-      {
-        hora: '19:30',
-        titulo: 'Traslado al Teaneck Marriott',
-        desc: 'De vuelta al Arthouse a buscar las valijas. Traslado al Teaneck Marriott, Nueva Jersey.',
-        maps: 'https://maps.google.com/?q=Teaneck+Marriott+New+Jersey',
-        mapsLabel: 'Teaneck Marriott NJ'
-      }
+      { hora:'09:00', titulo:'Central Park a pie', desc:'Cruzás el parque en diagonal hacia el Upper East Side. 17 min arbolados.', maps:'https://maps.google.com/?q=Central+Park+New+York', mapsLabel:'Central Park', lat:40.7851, lng:-73.9683, walk:{desde:'Arthouse Hotel → Quinta Avenida',dist:'1.4 km',mins:'17 min'} },
+      { hora:'10:30', titulo:'Metropolitan Museum of Art', desc:'Templo de Dendur, Ala Americana, pintura europea. Al salir, fachada del Guggenheim desde la calle.', maps:'https://maps.google.com/?q=Metropolitan+Museum+of+Art+New+York', mapsLabel:'The MET', lat:40.7794, lng:-73.9632 },
+      { hora:'13:00', titulo:'Eataly Flatiron', desc:'Mercado gourmet italiano. Come en la barra. Pasta y antipasti son el estándar.', maps:'https://maps.google.com/?q=Eataly+New+York+Flatiron', mapsLabel:'Eataly Flatiron', lat:40.7411, lng:-73.9897 },
+      { hora:'14:30', titulo:'Poster House', desc:'El único museo del mundo dedicado al diseño de pósters. 119 W 23rd St, Chelsea.', maps:'https://maps.google.com/?q=Poster+House+119+W+23rd+St+New+York', mapsLabel:'Poster House', lat:40.7449, lng:-73.9955, walk:{desde:'Eataly → Poster House',dist:'200 m',mins:'2 min'} },
+      { hora:'16:00', titulo:'High Line', desc:'Parque elevado sobre las vías del tren. Arte público y vistas del Hudson.', maps:'https://maps.google.com/?q=High+Line+New+York', mapsLabel:'High Line — entrada 23rd', lat:40.7480, lng:-74.0048, walk:{desde:'Poster House → High Line',dist:'150 m',mins:'2 min'} },
+      { hora:'17:30', titulo:'Whitney Museum', desc:'Edificio de Renzo Piano, Meatpacking. La terraza con vistas al Hudson vale los 10 minutos.', maps:'https://maps.google.com/?q=Whitney+Museum+of+American+Art+New+York', mapsLabel:'Whitney Museum', lat:40.7396, lng:-74.0089, walk:{desde:'High Line (salida norte) → Whitney',dist:'100 m',mins:'1 min'} },
+      { hora:'18:00', titulo:'SoHo', desc:'Adoquines, hierro fundido, boutiques independientes y locales conceptuales.', maps:'https://maps.google.com/?q=SoHo+New+York', mapsLabel:'SoHo', lat:40.7233, lng:-74.0030 },
+      { hora:'19:30', titulo:'Traslado al Teaneck Marriott', desc:'De vuelta al Arthouse por las valijas. Teaneck Marriott, Nueva Jersey.', maps:'https://maps.google.com/?q=Teaneck+Marriott+New+Jersey', mapsLabel:'Teaneck Marriott NJ', lat:40.8915, lng:-74.0107 }
     ]
   },
   {
-    id: 'd31',
-    pill: 'Dom 31',
-    num: 'DÍA 03',
-    titulo: 'Jornada de evento',
-    sub: 'Nueva Jersey — día completo',
+    id: 'd31', pill: 'Dom 31', num: 'DÍA 03', titulo: 'Jornada de evento',
+    sub: 'Nueva Jersey — día completo', weatherDate: '2026-05-31',
     nota: { label: 'Nota', texto: 'Todo el día dedicado a las actividades programadas en Nueva Jersey.' },
-    bloques: [],
-    especial: true
+    bloques: [], especial: true
   },
   {
-    id: 'l01',
-    pill: 'Lun 1',
-    num: 'DÍA 04',
-    titulo: 'El origen & la despedida',
-    sub: 'FiDi, Village y el ferry al atardecer',
+    id: 'l01', pill: 'Lun 1', num: 'DÍA 04', titulo: 'El origen & la despedida',
+    sub: 'FiDi, Village y el ferry al atardecer', weatherDate: '2026-06-01',
     nota: { label: 'Logística', texto: 'Mochila liviana todo el día. Habitación del Marriott disponible hasta la madrugada.' },
     bloques: [
-      {
-        hora: '09:30',
-        titulo: 'Financial District',
-        desc: 'Wall Street y las callejuelas de trazado holandés. Oculus de Calatrava. Memorial del 9/11.',
-        maps: 'https://maps.google.com/?q=Wall+Street+New+York',
-        mapsLabel: 'Wall Street / FiDi'
-      },
-      {
-        hora: '11:30',
-        titulo: 'Greenwich Village / NoHo',
-        desc: 'Subte al norte. Los rascacielos ceden a los edificios bajos de ladrillo con escaleras de incendio exteriores.',
-        maps: 'https://maps.google.com/?q=Greenwich+Village+New+York',
-        mapsLabel: 'Greenwich Village'
-      },
-      {
-        hora: '13:00',
-        titulo: 'Almuerzo',
-        desc: 'Si no fuiste el viernes: Katz\'s Delicatessen. Si ya fuiste: Ninth Street Espresso o Abraço — espresso corto en la barra.',
-        maps: 'https://maps.google.com/?q=Ninth+Street+Espresso+New+York',
-        mapsLabel: 'Ninth Street Espresso',
-        opciones: [
-          { label: 'OPCIÓN A', texto: 'Katz\'s Delicatessen — si no fuiste el viernes.' },
-          { label: 'OPCIÓN B', texto: 'Ninth Street Espresso o Abraço — espresso corto en la barra.' }
+      { hora:'09:30', titulo:'Financial District', desc:'Wall Street, callejuelas holandesas. Oculus de Calatrava. Memorial del 9/11.', maps:'https://maps.google.com/?q=Wall+Street+New+York', mapsLabel:'Wall St / FiDi', lat:40.7074, lng:-74.0113 },
+      { hora:'11:30', titulo:'Greenwich Village / NoHo', desc:'Subte al norte. Edificios bajos de ladrillo con escaleras de incendio exteriores.', maps:'https://maps.google.com/?q=Greenwich+Village+New+York', mapsLabel:'Greenwich Village', lat:40.7335, lng:-74.0027 },
+      { hora:'13:00', titulo:'Almuerzo', desc:'Katz\'s si no fuiste el viernes, o Ninth Street Espresso / Abraço.', maps:'https://maps.google.com/?q=Ninth+Street+Espresso+New+York', mapsLabel:'Ninth Street Espresso', lat:40.7282, lng:-73.9890,
+        opciones:[
+          {label:'OPCIÓN A', texto:"Katz's Delicatessen — si no fuiste el viernes."},
+          {label:'OPCIÓN B', texto:'Ninth Street Espresso o Abraço — espresso corto en la barra.'}
         ]
       },
-      {
-        hora: '14:00',
-        titulo: 'Tenement Museum',
-        desc: 'Lower East Side. Reservar turno online antes de salir de Israel. Edificio de inmigrantes del siglo XIX conservado tal cual. Probablemente la experiencia más emotiva del viaje.',
-        maps: 'https://maps.google.com/?q=Tenement+Museum+New+York',
-        mapsLabel: 'Tenement Museum',
-        walk: { desde: 'Ninth St Espresso → Tenement Museum', dist: '1.2 km', mins: '15 min' }
-      },
-      {
-        hora: '15:30',
-        titulo: 'Strand Book Store',
-        desc: 'Kilómetros de libros nuevos y usados cerca de Union Square. Arte, diseño y catálogos visuales.',
-        maps: 'https://maps.google.com/?q=Strand+Book+Store+New+York',
-        mapsLabel: 'Strand Book Store',
-        walk: { desde: 'Tenement Museum → Strand', dist: '1.5 km', mins: '18 min' }
-      },
-      {
-        hora: '16:30',
-        titulo: 'McNally Jackson SoHo',
-        desc: 'Librería independiente espectacular. Ideal para libros de diseño, arte y catálogos visuales.',
-        maps: 'https://maps.google.com/?q=McNally+Jackson+Books+SoHo+New+York',
-        mapsLabel: 'McNally Jackson SoHo',
-        walk: { desde: 'Strand → McNally Jackson', dist: '1.1 km', mins: '13 min' }
-      },
-      {
-        hora: '18:30',
-        titulo: 'Staten Island Ferry',
-        desc: 'Salida entre 18:30 y 19:00 para ver el skyline encenderse sobre el agua. El sol se pone cerca de las 20:15. Gratuito.',
-        maps: 'https://maps.google.com/?q=Staten+Island+Ferry+Terminal+New+York',
-        mapsLabel: 'Whitehall Ferry Terminal'
-      },
-      {
-        hora: '20:00',
-        titulo: 'Última cena en Manhattan',
-        desc: 'Cena de despedida en el Lower East Side o Chinatown.',
-        maps: 'https://maps.google.com/?q=Lower+East+Side+New+York',
-        mapsLabel: 'Lower East Side'
-      },
-      {
-        hora: '22:30',
-        titulo: 'Retorno al Teaneck Marriott',
-        desc: 'Armar valija, ducha caliente, descanso antes del vuelo largo.',
-        maps: 'https://maps.google.com/?q=Teaneck+Marriott+New+Jersey',
-        mapsLabel: 'Teaneck Marriott NJ'
-      }
+      { hora:'14:00', titulo:'Tenement Museum', desc:'Lower East Side. Reservar turno online antes de salir. La experiencia más emotiva del viaje.', maps:'https://maps.google.com/?q=Tenement+Museum+New+York', mapsLabel:'Tenement Museum', lat:40.7189, lng:-73.9900, walk:{desde:'Ninth St Espresso → Tenement Museum',dist:'1.2 km',mins:'15 min'} },
+      { hora:'15:30', titulo:'Strand Book Store', desc:'Union Square. Kilómetros de libros nuevos y usados. Arte y diseño.', maps:'https://maps.google.com/?q=Strand+Book+Store+New+York', mapsLabel:'Strand Book Store', lat:40.7333, lng:-73.9908, walk:{desde:'Tenement Museum → Strand',dist:'1.5 km',mins:'18 min'} },
+      { hora:'16:30', titulo:'McNally Jackson SoHo', desc:'Librería independiente espectacular. Diseño, arte y catálogos visuales.', maps:'https://maps.google.com/?q=McNally+Jackson+Books+SoHo+New+York', mapsLabel:'McNally Jackson SoHo', lat:40.7232, lng:-74.0010, walk:{desde:'Strand → McNally Jackson',dist:'1.1 km',mins:'13 min'} },
+      { hora:'18:30', titulo:'Staten Island Ferry', desc:'Salida entre 18:30–19:00 para ver el skyline encenderse. El sol se pone cerca de las 20:15. Gratis.', maps:'https://maps.google.com/?q=Staten+Island+Ferry+Terminal+New+York', mapsLabel:'Whitehall Ferry Terminal', lat:40.7006, lng:-74.0134 },
+      { hora:'20:00', titulo:'Última cena en Manhattan', desc:'Lower East Side o Chinatown.', maps:'https://maps.google.com/?q=Lower+East+Side+New+York', mapsLabel:'Lower East Side', lat:40.7157, lng:-73.9863 },
+      { hora:'22:30', titulo:'Retorno al Teaneck Marriott', desc:'Armar valija, ducha, descanso antes del vuelo.', maps:'https://maps.google.com/?q=Teaneck+Marriott+New+Jersey', mapsLabel:'Teaneck Marriott NJ', lat:40.8915, lng:-74.0107 }
     ]
   },
   {
-    id: 'm02',
-    pill: 'Mar 2',
-    num: 'DÍA 05',
-    titulo: 'Salida',
-    sub: 'Vuelo de regreso',
-    nota: null,
+    id: 'm02', pill: 'Mar 2', num: 'DÍA 05', titulo: 'Salida',
+    sub: 'Vuelo de regreso', weatherDate: '2026-06-02', nota: null,
     bloques: [
-      {
-        hora: '02:00 AM',
-        titulo: 'Salida hacia JFK',
-        desc: 'Auto desde el lobby del Teaneck Marriott directo al aeropuerto.',
-        maps: 'https://maps.google.com/?q=John+F+Kennedy+International+Airport',
-        mapsLabel: 'JFK Airport'
-      }
+      { hora:'02:00 AM', titulo:'Salida hacia JFK', desc:'Auto desde el lobby del Teaneck Marriott directo al aeropuerto.', maps:'https://maps.google.com/?q=John+F+Kennedy+International+Airport', mapsLabel:'JFK Airport', lat:40.6413, lng:-73.7781 }
     ]
   },
   {
-    id: 'd07',
-    pill: 'Dom 7',
-    num: 'DÍA 06',
-    titulo: 'Escala exprés',
-    sub: '11 horas en JFK — el último impacto',
-    nota: { label: 'Logística', texto: 'Verificar lockers en la terminal antes de salir. Alternativa: Bounce o Stasher cerca del aeropuerto.' },
+    id: 'd07', pill: 'Dom 7', num: 'DÍA 06', titulo: 'Escala exprés',
+    sub: '11 horas en JFK — el último impacto', weatherDate: '2026-06-07',
+    nota: { label: 'Logística', texto: 'Verificar lockers en la terminal antes de salir. Alternativa: Bounce o Stasher.' },
     bloques: [
-      {
-        hora: '16:05',
-        titulo: 'Aterrizaje en JFK',
-        desc: 'El avión toca pista.',
-        maps: 'https://maps.google.com/?q=JFK+Airport+Terminal',
-        mapsLabel: 'JFK Airport'
-      },
-      {
-        hora: '16:05',
-        titulo: 'Logística de escala',
-        desc: 'Migraciones / Aduana. Dejar equipaje de mano en lockers de la terminal.',
-        maps: 'https://maps.google.com/?q=JFK+Airport',
-        mapsLabel: 'JFK Airport'
-      },
-      {
-        hora: '17:30',
-        titulo: 'AirTrain + LIRR',
-        desc: 'AirTrain hasta Jamaica (25 min). LIRR directo a Grand Central Madison (20 min).',
-        maps: 'https://maps.google.com/?q=Grand+Central+Madison+New+York',
-        mapsLabel: 'Grand Central Madison'
-      },
-      {
-        hora: '18:30',
-        titulo: 'Grand Central → Chrysler Building',
-        desc: 'Nave central de Grand Central en hora pico. Desvío de 5 min por Lexington para ver el Chrysler Building de cerca. Quinta Avenida.',
-        maps: 'https://maps.google.com/?q=Chrysler+Building+New+York',
-        mapsLabel: 'Chrysler Building',
-        walk: { desde: 'Grand Central → Chrysler Building', dist: '350 m', mins: '4 min' }
-      },
-      {
-        hora: '20:00',
-        titulo: 'Times Square de noche',
-        desc: 'Las escaleras rojas. El último bombardeo de luz y pantallas LED. El impacto neoyorquino definitivo.',
-        maps: 'https://maps.google.com/?q=Times+Square+New+York',
-        mapsLabel: 'Times Square',
-        walk: { desde: 'Chrysler Building → Times Square', dist: '900 m', mins: '11 min' }
-      },
-      {
-        hora: '21:00',
-        titulo: 'Última hamburguesa o pizza',
-        desc: 'Hell\'s Kitchen o alrededores. Algo potente en la barra antes del vuelo.',
-        maps: 'https://maps.google.com/?q=Hell\'s+Kitchen+New+York',
-        mapsLabel: 'Hell\'s Kitchen'
-      },
-      {
-        hora: '22:00',
-        titulo: 'Retorno a JFK',
-        desc: 'LIRR + AirTrain. Llegás con 3 horas de margen. Vuelo a las 02:00 AM.',
-        maps: 'https://maps.google.com/?q=JFK+Airport',
-        mapsLabel: 'JFK Airport'
-      }
+      { hora:'16:05', titulo:'Aterrizaje en JFK', desc:'El avión toca pista.', maps:'https://maps.google.com/?q=JFK+Airport', mapsLabel:'JFK Airport', lat:40.6413, lng:-73.7781 },
+      { hora:'16:05', titulo:'Logística de escala', desc:'Migraciones / Aduana. Dejar equipaje en lockers de la terminal.', maps:'https://maps.google.com/?q=JFK+Airport', mapsLabel:'JFK Airport', lat:40.6413, lng:-73.7781 },
+      { hora:'17:30', titulo:'AirTrain + LIRR', desc:'AirTrain hasta Jamaica (25 min). LIRR a Grand Central Madison (20 min).', maps:'https://maps.google.com/?q=Grand+Central+Madison+New+York', mapsLabel:'Grand Central Madison', lat:40.7527, lng:-73.9772 },
+      { hora:'18:30', titulo:'Grand Central → Chrysler Building', desc:'Nave central de Grand Central en hora pico. Desvío de 5 min por Lexington: el Chrysler de cerca. Quinta Avenida.', maps:'https://maps.google.com/?q=Chrysler+Building+New+York', mapsLabel:'Chrysler Building', lat:40.7516, lng:-73.9755, walk:{desde:'Grand Central → Chrysler Building',dist:'350 m',mins:'4 min'} },
+      { hora:'20:00', titulo:'Times Square de noche', desc:'Las escaleras rojas. El último bombardeo de luz y pantallas LED.', maps:'https://maps.google.com/?q=Times+Square+New+York', mapsLabel:'Times Square', lat:40.7580, lng:-73.9855, walk:{desde:'Chrysler Building → Times Square',dist:'900 m',mins:'11 min'} },
+      { hora:'21:00', titulo:'Última hamburguesa o pizza', desc:'Hell\'s Kitchen. Algo potente en la barra antes del vuelo.', maps:"https://maps.google.com/?q=Hell's+Kitchen+New+York", mapsLabel:"Hell's Kitchen", lat:40.7638, lng:-73.9918 },
+      { hora:'22:00', titulo:'Retorno a JFK', desc:'LIRR + AirTrain. 3 horas de margen. Vuelo a las 02:00 AM.', maps:'https://maps.google.com/?q=JFK+Airport', mapsLabel:'JFK Airport', lat:40.6413, lng:-73.7781 }
     ]
   }
 ];
 
-function loadChecks() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
-  catch(e) { return {}; }
-}
+const WMO = {
+  0:'Despejado ☀️', 1:'Mayormente despejado 🌤️', 2:'Parcialmente nublado ⛅', 3:'Nublado ☁️',
+  45:'Niebla 🌫️', 48:'Niebla 🌫️', 51:'Llovizna 🌦️', 53:'Llovizna 🌦️', 55:'Llovizna 🌦️',
+  61:'Lluvia leve 🌧️', 63:'Lluvia 🌧️', 65:'Lluvia fuerte 🌧️',
+  71:'Nieve 🌨️', 73:'Nieve 🌨️', 75:'Nieve 🌨️',
+  80:'Chaparrones 🌦️', 81:'Chaparrones 🌦️', 82:'Chaparrones fuertes ⛈️',
+  95:'Tormenta ⛈️', 96:'Tormenta ⛈️', 99:'Tormenta ⛈️'
+};
+const WMO_ICON = {
+  0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',
+  51:'🌦️',53:'🌦️',55:'🌦️',61:'🌧️',63:'🌧️',65:'🌧️',
+  71:'🌨️',73:'🌨️',75:'🌨️',80:'🌦️',81:'🌦️',82:'⛈️',95:'⛈️',96:'⛈️',99:'⛈️'
+};
 
-function saveChecks(checks) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(checks));
-}
-
-let checks = loadChecks();
+let checks = (() => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'); } catch(e){ return {}; } })();
 let activeDayId = dias[0].id;
+let activeTab = 'itinerario';
+let weatherData = null;
+let usdIls = null;
 
-function toggleCheck(dayId, idx) {
-  const key = dayId + '_' + idx;
-  checks[key] = !checks[key];
-  saveChecks(checks);
-  render();
+function saveChecks() { localStorage.setItem(STORAGE_KEY, JSON.stringify(checks)); }
+function isChecked(dayId, idx) { return !!checks[dayId+'_'+idx]; }
+function toggleCheck(dayId, idx) { checks[dayId+'_'+idx] = !checks[dayId+'_'+idx]; saveChecks(); renderItinerario(); }
+
+function setTab(tab) {
+  activeTab = tab;
+  document.querySelectorAll('.extra-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+  if (tab === 'clima' && !weatherData) loadWeather();
+  if (tab === 'shekel' && !usdIls) loadRate();
+  if (tab === 'mapa') renderMap();
 }
 
-function isChecked(dayId, idx) {
-  return !!checks[dayId + '_' + idx];
+function setDay(id) {
+  activeDayId = id;
+  renderItinerario();
+  renderNav();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+async function loadWeather() {
+  try {
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=40.7128&longitude=-74.0060&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode&timezone=America/New_York&start_date=2026-05-29&end_date=2026-06-07&wind_speed_unit=mph';
+    const r = await fetch(url);
+    weatherData = (await r.json()).daily;
+    renderWeatherPanel();
+    updateHeaderWeather();
+  } catch(e) {
+    document.getElementById('climaContent').innerHTML = '<p class="clima-loading">No se pudo cargar el pronóstico. Intentá de nuevo más tarde.</p>';
+  }
+}
+
+function getWeatherForDate(dateStr) {
+  if (!weatherData) return null;
+  const idx = weatherData.time.indexOf(dateStr);
+  if (idx === -1) return null;
+  return {
+    max: Math.round(weatherData.temperature_2m_max[idx]),
+    min: Math.round(weatherData.temperature_2m_min[idx]),
+    rain: weatherData.precipitation_probability_max[idx],
+    code: weatherData.weathercode[idx]
+  };
+}
+
+function renderWeatherPanel() {
+  if (!weatherData) return;
+  const html = '<div class="clima-grid">' + dias.map(d => {
+    const w = getWeatherForDate(d.weatherDate);
+    if (!w) return '';
+    const icon = WMO_ICON[w.code] || '🌡️';
+    const desc = WMO[w.code] || '';
+    return `<div class="clima-card">
+      <div class="clima-card-fecha">${d.pill.toUpperCase()}</div>
+      <div class="clima-card-icon">${icon}</div>
+      <div class="clima-card-temps">${w.max}° <span>/ ${w.min}°C</span></div>
+      <div class="clima-card-desc">${desc.replace(/[^\w\sáéíóúüñÁÉÍÓÚÜÑ,]/g,'').trim()}</div>
+      <div class="clima-card-rain">💧 ${w.rain}% lluvia</div>
+    </div>`;
+  }).join('') + '</div>';
+  document.getElementById('climaContent').innerHTML = html;
+}
+
+function updateHeaderWeather() {
+  const dia = dias.find(d => d.id === activeDayId);
+  if (!dia || !weatherData) return;
+  const w = getWeatherForDate(dia.weatherDate);
+  if (!w) return;
+  document.getElementById('headerIcon').textContent = WMO_ICON[w.code] || '🌡️';
+  document.getElementById('headerTemp').textContent = w.max + '°C';
+}
+
+async function loadRate() {
+  try {
+    const r = await fetch('https://open.er-api.com/v6/latest/USD');
+    const data = await r.json();
+    usdIls = data.rates.ILS;
+    const updated = new Date(data.time_last_update_utc).toLocaleDateString('es-AR', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    document.getElementById('rateNum').textContent = usdIls.toFixed(3);
+    document.getElementById('rateUpdated').textContent = 'Actualizado: ' + updated;
+    renderTips();
+  } catch(e) {
+    document.getElementById('rateUpdated').textContent = 'No se pudo cargar el tipo de cambio.';
+  }
+}
+
+function convertFrom(from) {
+  if (!usdIls) return;
+  if (from === 'usd') {
+    const usd = parseFloat(document.getElementById('inputUSD').value) || 0;
+    document.getElementById('inputILS').value = usd ? (usd * usdIls).toFixed(0) : '';
+  } else {
+    const ils = parseFloat(document.getElementById('inputILS').value) || 0;
+    document.getElementById('inputUSD').value = ils ? (ils / usdIls).toFixed(2) : '';
+  }
+}
+
+function renderTips() {
+  if (!usdIls) return;
+  const refs = [
+    {usd:1, label:'$1 USD'},
+    {usd:2, label:'Propina mostrador Katz\'s'},
+    {usd:5, label:'Café + propina'},
+    {usd:20, label:'Entrada museo aprox.'},
+    {usd:50, label:'Cena tranquila'},
+    {usd:100, label:'Cena buena'},
+  ];
+  document.getElementById('convTips').innerHTML = refs.map(r =>
+    `<div class="conv-tip-row">
+      <span class="conv-tip-usd">${r.label} ($${r.usd})</span>
+      <span class="conv-tip-ils">₪${(r.usd * usdIls).toFixed(0)}</span>
+    </div>`
+  ).join('');
+}
+
+function renderMap() {
+  const sel = document.getElementById('mapSelect');
+  if (!sel.innerHTML) {
+    sel.innerHTML = dias.map(d => `<option value="${d.id}">${d.num} — ${d.pill} — ${d.titulo}</option>`).join('');
+    sel.value = activeDayId;
+  }
+  const dia = dias.find(d => d.id === sel.value);
+  if (!dia || !dia.bloques.length) {
+    document.getElementById('mapContent').innerHTML = '<p class="clima-loading">Sin puntos para este día.</p>';
+    return;
+  }
+  const puntos = dia.bloques.filter(b => b.lat);
+  const centerLat = puntos.reduce((a,b) => a + b.lat, 0) / puntos.length;
+  const centerLng = puntos.reduce((a,b) => a + b.lng, 0) / puntos.length;
+  const query = puntos.map(p => `${p.lat},${p.lng}`).join('|');
+  const mapsUrl = `https://maps.google.com/?q=${puntos[0].lat},${puntos[0].lng}`;
+
+  document.getElementById('mapContent').innerHTML = `
+    <div class="map-day-title">${dia.titulo.toUpperCase()} — ${dia.sub}</div>
+    <div class="map-frame">
+      <iframe src="https://maps.google.com/maps?q=${centerLat},${centerLng}&z=13&output=embed" allowfullscreen loading="lazy"></iframe>
+    </div>
+    <div class="map-points">
+      ${puntos.map((p,i) => `
+        <a class="map-point" href="https://maps.google.com/?q=${p.lat},${p.lng}" target="_blank" style="text-decoration:none;color:inherit;">
+          <div class="map-point-num">${i+1}</div>
+          <div>
+            <div class="map-point-name">${p.titulo}</div>
+            <div class="map-point-hora">${p.hora} · ${p.mapsLabel}</div>
+          </div>
+        </a>`).join('')}
+    </div>`;
 }
 
 function buildWalkHTML(walk) {
@@ -597,77 +459,81 @@ function buildWalkHTML(walk) {
 }
 
 function buildOpcionesHTML(opciones) {
-  if (!opciones || !opciones.length) return '';
+  if (!opciones) return '';
   return '<div class="opciones">' + opciones.map(o =>
-    `<div class="opcion">
-      <span class="opcion-label">${o.label}</span>
-      <span class="opcion-text">${o.texto}</span>
-    </div>`
+    `<div class="opcion"><span class="opcion-label">${o.label}</span><span class="opcion-text">${o.texto}</span></div>`
   ).join('') + '</div>';
 }
 
-function buildBloqueHTML(dayId, bloque, idx) {
+function buildBloqueHTML(dayId, b, idx) {
   const checked = isChecked(dayId, idx);
   return `
-    ${bloque.walk ? buildWalkHTML(bloque.walk) : ''}
-    <div class="bloque ${checked ? 'checked' : ''}" onclick="toggleCheck('${dayId}', ${idx})">
+    ${b.walk ? buildWalkHTML(b.walk) : ''}
+    <div class="bloque ${checked?'checked':''}" onclick="toggleCheck('${dayId}',${idx})">
       <div class="bloque-left">
-        <div class="bloque-hora">${bloque.hora.replace(':', '<br>')}</div>
+        <div class="bloque-hora">${b.hora.replace(':','<br>')}</div>
         <div class="bloque-dot"></div>
       </div>
       <div class="bloque-body">
-        <div class="bloque-titulo">${bloque.titulo}</div>
-        <div class="bloque-desc">${bloque.desc}</div>
-        ${bloque.opciones ? buildOpcionesHTML(bloque.opciones) : ''}
-        <a class="bloque-maps" href="${bloque.maps}" target="_blank" onclick="event.stopPropagation()">
+        <div class="bloque-titulo">${b.titulo}</div>
+        <div class="bloque-desc">${b.desc}</div>
+        ${b.opciones ? buildOpcionesHTML(b.opciones) : ''}
+        <a class="bloque-maps" href="${b.maps}" target="_blank" onclick="event.stopPropagation()">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          ${bloque.mapsLabel}
+          ${b.mapsLabel}
         </a>
       </div>
     </div>`;
 }
 
-function render() {
-  const nav = document.getElementById('daysNav');
-  const content = document.getElementById('content');
-
-  nav.innerHTML = dias.map(d => {
-    const isActive = d.id === activeDayId;
-    return `<button class="day-pill ${isActive ? 'active' : ''}" onclick="setDay('${d.id}')">${d.pill}</button>`;
-  }).join('');
-
-  content.innerHTML = dias.map(d => {
-    const isActive = d.id === activeDayId;
-    const notaHTML = d.nota ? `
-      <div class="day-nota">
-        <p><strong>${d.nota.label}:</strong> ${d.nota.texto}</p>
-      </div>` : '';
-
-    const bloquesHTML = d.especial
-      ? `<div class="evento-especial"><p>${d.nota ? d.nota.texto : ''}</p></div>`
-      : `<p class="check-hint">Tocá un bloque para marcarlo como hecho</p>
-         <div class="bloques">${d.bloques.map((b, i) => buildBloqueHTML(d.id, b, i)).join('')}</div>`;
-
-    return `
-      <div class="day-section ${isActive ? 'active' : ''}" id="day-${d.id}">
-        <div class="day-hero">
-          <div class="day-num">${d.num}</div>
-          <div class="day-title">${d.titulo}</div>
-          <div class="day-sub">${d.sub}</div>
-          ${d.nota && !d.especial ? notaHTML : ''}
-        </div>
-        ${bloquesHTML}
-      </div>`;
-  }).join('');
+function renderNav() {
+  document.getElementById('daysNav').innerHTML = dias.map(d =>
+    `<button class="day-pill ${d.id===activeDayId?'active':''}" onclick="setDay('${d.id}')">${d.pill}</button>`
+  ).join('');
 }
 
-function setDay(id) {
-  activeDayId = id;
-  render();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+function renderItinerario() {
+  const dia = dias.find(d => d.id === activeDayId);
+  if (!dia) return;
+
+  const w = weatherData ? getWeatherForDate(dia.weatherDate) : null;
+  const weatherHTML = w ? `
+    <div class="day-weather">
+      <div class="day-weather-icon">${WMO_ICON[w.code]||'🌡️'}</div>
+      <div>
+        <div class="day-weather-temps">${w.max}° / ${w.min}°C</div>
+        <div class="day-weather-desc">${(WMO[w.code]||'').replace(/[^\w\sáéíóúüñÁÉÍÓÚÜÑ,]/g,'').trim()}</div>
+      </div>
+      <div class="day-weather-rain">
+        <div class="day-weather-rain-pct">💧 ${w.rain}%</div>
+        <div class="day-weather-rain-label">lluvia</div>
+      </div>
+    </div>` : '';
+
+  const notaHTML = dia.nota && !dia.especial ? `
+    <div class="day-nota"><p><strong>${dia.nota.label}:</strong> ${dia.nota.texto}</p></div>` : '';
+
+  const bloquesHTML = dia.especial
+    ? `<div class="evento-especial"><p>${dia.nota ? dia.nota.texto : ''}</p></div>`
+    : `<p class="check-hint">Tocá un bloque para marcarlo como hecho</p>
+       <div class="bloques">${dia.bloques.map((b,i) => buildBloqueHTML(dia.id,b,i)).join('')}</div>`;
+
+  document.getElementById('content').innerHTML = `
+    <div class="day-hero">
+      <div class="day-num">${dia.num}</div>
+      <div class="day-title">${dia.titulo}</div>
+      <div class="day-sub">${dia.sub}</div>
+      ${notaHTML}${weatherHTML}
+    </div>
+    ${bloquesHTML}`;
+
+  updateHeaderWeather();
 }
 
-render();
+renderNav();
+renderItinerario();
+loadWeather();
+loadRate();
 </script>
 </body>
 </html>
