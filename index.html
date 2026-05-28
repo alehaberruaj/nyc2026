@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>NYC 2026</title>
+<title>🗽 NYC & México 2026</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 :root {
@@ -190,8 +190,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 <div class="app-header">
   <div class="app-header-top">
     <div>
-      <div class="app-title">NYC <span>2026</span></div>
-      <div class="app-dates">29 MAYO — 7 JUNIO</div>
+      <div class="app-title">🗽 NYC <span>&</span> MX</div>
+      <div class="app-dates">29 MAYO — 8 JUNIO · NYC & CDMX</div>
     </div>
     <div class="header-right">
       <div class="weather-badge" id="headerWeather">
@@ -206,7 +206,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 <div class="extra-tabs">
   <button class="extra-tab active" id="tab-btn-itinerario" onclick="setTab('itinerario')">Itinerario</button>
   <button class="extra-tab" id="tab-btn-clima" onclick="setTab('clima')">Clima</button>
-  <button class="extra-tab" id="tab-btn-shekel" onclick="setTab('shekel')">₪ Shekel</button>
+  <button class="extra-tab" id="tab-btn-shekel" onclick="setTab('shekel')">💱 Cambio</button>
   <button class="extra-tab" id="tab-btn-mapa" onclick="setTab('mapa')">Mapa</button>
   <button class="extra-tab" id="tab-btn-ubicacion" onclick="setTab('ubicacion')">📍</button>
   <button class="extra-tab" id="tab-btn-gastos" onclick="setTab('gastos')">$</button>
@@ -225,12 +225,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     <div class="conv-label">TIPO DE CAMBIO</div>
     <div class="conv-rate-bar">
       <div>
-        <div class="conv-rate-num">1 USD = <span id="rateNum">—</span> ₪</div>
+        <div class="conv-rate-num">1 USD = <span id="rateNum">—</span> ₪ · <span id="rateMXN">—</span> $MX</div>
         <div class="conv-updated" id="rateUpdated">Cargando...</div>
       </div>
     </div>
     <div class="conv-label">CONVERTIR</div>
-    <div class="conv-inputs">
+    <div class="conv-inputs" style="grid-template-columns:1fr 1fr 1fr;">
       <div class="conv-field">
         <label>USD $</label>
         <input type="number" id="inputUSD" placeholder="0" oninput="convertFrom('usd')">
@@ -238,6 +238,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
       <div class="conv-field">
         <label>ILS ₪</label>
         <input type="number" id="inputILS" placeholder="0" oninput="convertFrom('ils')">
+      </div>
+      <div class="conv-field">
+        <label>MXN $</label>
+        <input type="number" id="inputMXN" placeholder="0" oninput="convertFrom('mxn')">
       </div>
     </div>
     <div class="conv-label">REFERENCIA RÁPIDA</div>
@@ -460,6 +464,7 @@ let activeTab = 'itinerario';
 let weatherData = null;
 let weatherHourly = null;
 let usdIls = null;
+let usdMxn = null;
 
 function saveChecks() { localStorage.setItem(STORAGE_KEY, JSON.stringify(checks)); }
 function isChecked(dayId, idx) { return !!checks[dayId+'_'+idx]; }
@@ -606,8 +611,10 @@ async function loadRate() {
     const r = await fetch('https://open.er-api.com/v6/latest/USD');
     const data = await r.json();
     usdIls = data.rates.ILS;
+    usdMxn = data.rates.MXN;
     const updated = new Date(data.time_last_update_utc).toLocaleDateString('es-AR', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
     document.getElementById('rateNum').textContent = usdIls.toFixed(3);
+    document.getElementById('rateMXN').textContent = usdMxn.toFixed(2);
     document.getElementById('rateUpdated').textContent = 'Actualizado: ' + updated;
     renderTips();
   } catch(e) {
@@ -617,12 +624,23 @@ async function loadRate() {
 
 function convertFrom(from) {
   if (!usdIls) return;
+  const usdEl = document.getElementById('inputUSD');
+  const ilsEl = document.getElementById('inputILS');
+  const mxnEl = document.getElementById('inputMXN');
   if (from === 'usd') {
-    const usd = parseFloat(document.getElementById('inputUSD').value) || 0;
-    document.getElementById('inputILS').value = usd ? (usd * usdIls).toFixed(0) : '';
-  } else {
-    const ils = parseFloat(document.getElementById('inputILS').value) || 0;
-    document.getElementById('inputUSD').value = ils ? (ils / usdIls).toFixed(2) : '';
+    const usd = parseFloat(usdEl.value) || 0;
+    ilsEl.value = usd ? (usd * usdIls).toFixed(0) : '';
+    mxnEl.value = usd ? (usd * usdMxn).toFixed(0) : '';
+  } else if (from === 'ils') {
+    const ils = parseFloat(ilsEl.value) || 0;
+    const usd = ils ? ils / usdIls : 0;
+    usdEl.value = usd ? usd.toFixed(2) : '';
+    mxnEl.value = usd ? (usd * usdMxn).toFixed(0) : '';
+  } else if (from === 'mxn') {
+    const mxn = parseFloat(mxnEl.value) || 0;
+    const usd = mxn ? mxn / usdMxn : 0;
+    usdEl.value = usd ? usd.toFixed(2) : '';
+    ilsEl.value = usd ? (usd * usdIls).toFixed(0) : '';
   }
 }
 
@@ -639,7 +657,10 @@ function renderTips() {
   document.getElementById('convTips').innerHTML = refs.map(r =>
     `<div class="conv-tip-row">
       <span class="conv-tip-usd">${r.label} ($${r.usd})</span>
-      <span class="conv-tip-ils">₪${(r.usd * usdIls).toFixed(0)}</span>
+      <div style="display:flex;gap:10px;">
+        <span class="conv-tip-ils">₪${(r.usd * usdIls).toFixed(0)}</span>
+        <span class="conv-tip-ils" style="color:var(--gris3);">$${(r.usd * usdMxn).toFixed(0)} MX</span>
+      </div>
     </div>`
   ).join('');
 }
