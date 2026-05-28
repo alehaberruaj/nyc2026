@@ -335,17 +335,97 @@ const dias = [
     ]
   },
   {
-    id: 'm02', pill: 'Mar 2', num: 'DÍA 05', titulo: 'Salida',
-    sub: 'Vuelo de regreso', weatherDate: '2026-06-02', nota: null,
+    id: 'm02', pill: 'Mar 2', num: 'DÍA 05', titulo: 'Salida hacia México',
+    sub: 'JFK → Ciudad de México', weatherDate: '2026-06-02', nota: null,
     bloques: [
-      { hora:'02:00 AM', titulo:'Salida hacia JFK', desc:'Auto desde el lobby del Teaneck Marriott directo al aeropuerto.', maps:'https://maps.google.com/?q=John+F+Kennedy+International+Airport', mapsLabel:'JFK Airport', lat:40.6413, lng:-73.7781 }
+      { hora:'05:00 AM', titulo:'Salida hacia JFK', desc:'Auto desde el lobby del Teaneck Marriott. Vuelo JFK → MEX a las 08:06, Terminal 4. Llegada estimada al aeropuerto 06:00 — 2 horas de margen.', maps:'https://maps.google.com/?q=John+F+Kennedy+International+Airport', mapsLabel:'JFK Airport', lat:40.6413, lng:-73.7781 }
     ]
   },
   {
-    id: 'd07', pill: 'Dom 7', num: 'DÍA 06', titulo: 'Escala exprés',
-    sub: '11 horas en JFK — el último impacto', weatherDate: '2026-06-07',
-    nota: { label: 'Logística', texto: 'Verificar lockers en la terminal antes de salir. Alternativa: Bounce o Stasher.' },
+    id: 'l02',
+    pill: 'Lun 2',
+    num: 'DÍA 06',
+    titulo: 'Llegada a México',
+    sub: 'Polanco — primer contacto',
+    weatherDate: '2026-06-02',
+    nota: { label: 'Hotel', texto: 'Hilton Polanco. Llegás a las 11:35 al aeropuerto Benito Juárez (Terminal 2). Traslado ~40 min al hotel.' },
     bloques: [
+      { hora:'11:35', titulo:'Aterrizaje en CDMX', desc:'Aeropuerto Internacional Benito Juárez, Terminal 2. Migraciones, aduana y traslado al Hilton Polanco.', maps:'https://maps.google.com/?q=Aeropuerto+Internacional+Benito+Juarez+Ciudad+de+Mexico', mapsLabel:'Aeropuerto CDMX', lat:19.4363, lng:-99.0721 },
+      { hora:'13:30', titulo:'Check-in — Hilton Polanco', desc:'Instalate, descansá. El lunes llegás cansado de NYC. Tarde tranquila.', maps:'https://maps.google.com/?q=Hilton+Mexico+City+Polanco', mapsLabel:'Hilton Polanco', lat:19.4328, lng:-99.1980, web:'https://www.hilton.com' },
+      { hora:'20:00', titulo:'Zona de cena — Polanco', desc:'Polanco es el barrio gastronómico más denso de CDMX. Presidente Masaryk o Anatole France tienen decenas de opciones de todo nivel. Elegís en el momento.', maps:'https://maps.google.com/?q=Polanco+Ciudad+de+Mexico', mapsLabel:'Polanco', lat:19.4328, lng:-99.1950 }
+    ]
+  },
+  {
+    id: 'm03',
+    pill: 'Mar 3',
+    num: 'DÍA 07',
+    titulo: 'Reuniones',
+    sub: 'Polanco — libre desde las 20:00',
+    weatherDate: '2026-06-03',
+    nota: { label: 'Nota', texto: 'Reuniones todo el día. Libre a partir de las 20:00.' },
+    bloques: [
+      { hora:'20:00', titulo:'Zona de cena — Condesa', desc:'La Condesa queda a 15 min de Polanco en Uber. Ambiente más bohemio, terrazas sobre la Avenida Amsterdam. Ideal para desconectar después de un día de reuniones.', maps:'https://maps.google.com/?q=Condesa+Ciudad+de+Mexico', mapsLabel:'Condesa CDMX', lat:19.4116, lng:-99.1741 }
+    ]
+  },
+  {
+    id: 'x04',
+    pill: 'Mié 4',
+    num: 'DÍA 08',
+    titulo: 'Reuniones + mudanza',
+    sub: 'Polanco → Roma Norte',
+    weatherDate: '2026-06-04',
+    nota: { label: 'Hotel', texto: 'Hoy te mudás al NH Collection Roma Norte (o alrededores). Check-out Hilton Polanco antes de las reuniones.' },
+    bloques: [
+      { hora:'20:00', titulo:'Zona de cena — Roma Norte', desc:'Tu nuevo barrio. La Roma tiene la mejor escena gastronómica y de bares de CDMX. Orizaba, Álvaro Obregón y Tonalá son las calles clave. Recorrés y elegís.', maps:'https://maps.google.com/?q=Roma+Norte+Ciudad+de+Mexico', mapsLabel:'Roma Norte', lat:19.4185, lng:-99.1624 }
+    ]
+  },
+  {
+    id: 'j05',
+    pill: 'Jue 5',
+    num: 'DÍA 09',
+    titulo: 'Roma Norte & Condesa',
+    sub: 'Primer día libre completo en CDMX',
+    weatherDate: '2026-06-05',
+    nota: { label: 'Clima', texto: 'Junio es temporada de lluvias en CDMX. Lluvia casi garantizada en la tarde. Salí temprano y llegá al hotel antes de las 17:00.' },
+    bloques: [
+      { hora:'09:00', titulo:'Desayuno en Roma Norte', desc:'La Roma tiene los mejores cafés de especialidad de CDMX. Buscá cualquier café sobre Álvaro Obregón o Orizaba.', maps:'https://maps.google.com/?q=Roma+Norte+Ciudad+de+Mexico', mapsLabel:'Roma Norte', lat:19.4185, lng:-99.1624 },
+      { hora:'10:30', titulo:'Mercado de Medellín', desc:'Mercado de barrio auténtico. Frutas tropicales, jugos, gastronomía local. Una hora de recorrido.', maps:'https://maps.google.com/?q=Mercado+Medellin+Ciudad+de+Mexico', mapsLabel:'Mercado de Medellín', lat:19.4092, lng:-99.1691 },
+      { hora:'12:00', titulo:'Parque México — Condesa', desc:'El parque más bonito de CDMX. Art Déco por todos lados, perros, cafés con terraza. Caminata tranquila.', maps:'https://maps.google.com/?q=Parque+Mexico+Condesa+Ciudad+de+Mexico', mapsLabel:'Parque México', lat:19.4116, lng:-99.1741 },
+      { hora:'13:30', titulo:'Zona de almuerzo — Condesa', desc:'Cualquier terraza sobre la Avenida Ámsterdam o Tamaulipas. Tacos, mariscos o cocina de autor.', maps:'https://maps.google.com/?q=Avenida+Amsterdam+Condesa+Ciudad+de+Mexico', mapsLabel:'Av. Amsterdam, Condesa', lat:19.4116, lng:-99.1741 },
+      { hora:'15:30', titulo:'Librería El Péndulo — Roma', desc:'La librería más famosa de CDMX. Café adentro, mucho diseño y arte. Ideal para pasar una hora antes de la lluvia.', maps:'https://maps.google.com/?q=Libreria+El+Pendulo+Roma+Ciudad+de+Mexico', mapsLabel:'El Péndulo Roma', lat:19.4168, lng:-99.1624, web:'https://pendulo.com' },
+      { hora:'20:00', titulo:'Zona de cena — Roma Norte', desc:'Última noche libre larga. Tomás, Maximo Bistrot o cualquier terraza sobre Orizaba.', maps:'https://maps.google.com/?q=Roma+Norte+Ciudad+de+Mexico', mapsLabel:'Roma Norte', lat:19.4185, lng:-99.1624 }
+    ]
+  },
+  {
+    id: 'v06',
+    pill: 'Vie 6',
+    num: 'DÍA 10',
+    titulo: 'Frida Kahlo & Coyoacán',
+    sub: 'Sur de la ciudad — día cultural',
+    weatherDate: '2026-06-06',
+    nota: { label: 'Reserva', texto: 'Entrada Casa Azul 14:30 ya confirmada. Llegá 15 min antes.' },
+    bloques: [
+      { hora:'10:00', titulo:'Mañana libre en Roma Norte', desc:'Último desayuno tranquilo en el barrio. Café de especialidad, caminata por Álvaro Obregón.', maps:'https://maps.google.com/?q=Roma+Norte+Ciudad+de+Mexico', mapsLabel:'Roma Norte', lat:19.4185, lng:-99.1624 },
+      { hora:'13:00', titulo:'Traslado a Coyoacán', desc:'Uber desde Roma Norte ~25 min. Llegás al barrio con tiempo para recorrer el centro histórico antes de la visita.', maps:'https://maps.google.com/?q=Coyoacan+Ciudad+de+Mexico', mapsLabel:'Coyoacán', lat:19.3500, lng:-99.1627 },
+      { hora:'13:15', titulo:'Zona de almuerzo — Coyoacán', desc:'El mercado de Coyoacán o cualquier restaurante del centro histórico. Tostadas, tlayudas, cocina oaxaqueña.', maps:'https://maps.google.com/?q=Mercado+de+Coyoacan+Ciudad+de+Mexico', mapsLabel:'Mercado de Coyoacán', lat:19.3490, lng:-99.1621 },
+      { hora:'14:15', titulo:'Plaza Hidalgo & Jardín Centenario', desc:'El corazón de Coyoacán. Iglesia colonial, vendedores, ambiente muy distinto al resto de la ciudad.', maps:'https://maps.google.com/?q=Plaza+Hidalgo+Coyoacan+Ciudad+de+Mexico', mapsLabel:'Plaza Hidalgo, Coyoacán', lat:19.3496, lng:-99.1627 },
+      { hora:'14:30', titulo:'Casa Azul — Museo Frida Kahlo', desc:'La casa donde nació y vivió Frida Kahlo. Una de las visitas más importantes de CDMX. Entrada ya reservada.', maps:'https://maps.google.com/?q=Museo+Frida+Kahlo+Casa+Azul+Coyoacan', mapsLabel:'Casa Azul — Museo Frida Kahlo', lat:19.3553, lng:-99.1627, entrada:'Reservada', web:'https://www.museofridakahlo.org.mx' },
+      { hora:'16:30', titulo:'Recorrido libre — Coyoacán', desc:'Después de la Casa Azul, el barrio invita a seguir caminando. Helado de la Riqueza Coyoacanense (los más famosos de la ciudad) o una michelada en cualquier bar de la plaza.', maps:'https://maps.google.com/?q=Coyoacan+Ciudad+de+Mexico', mapsLabel:'Coyoacán', lat:19.3500, lng:-99.1627 },
+      { hora:'19:00', titulo:'Retorno a Roma Norte', desc:'Uber de vuelta ~30 min. Última noche en CDMX.', maps:'https://maps.google.com/?q=Roma+Norte+Ciudad+de+Mexico', mapsLabel:'Roma Norte', lat:19.4185, lng:-99.1624 },
+      { hora:'20:30', titulo:'Cena de despedida — Roma Norte', desc:'Última cena en CDMX. La Roma de noche es lo mejor de la ciudad.', maps:'https://maps.google.com/?q=Roma+Norte+Ciudad+de+Mexico', mapsLabel:'Roma Norte', lat:19.4185, lng:-99.1624 },
+      { hora:'22:00', titulo:'Retorno al hotel', desc:'Mañana salís temprano. Armá la valija esta noche.', maps:'https://maps.google.com/?q=NH+Collection+Mexico+City+Roma', mapsLabel:'NH Collection Roma', lat:19.4185, lng:-99.1624 }
+    ]
+  },
+  {
+    id: 's07',
+    pill: 'Sáb 7',
+    num: 'DÍA 11',
+    titulo: 'Salida + Escala NYC',
+    sub: 'CDMX → JFK (escala 11 hs) → Tel Aviv',
+    weatherDate: '2026-06-07',
+    nota: { label: 'Vuelos', texto: 'MEX → JFK: salida 08:40 T2. JFK → TLV: salida 02:20 lunes T4. Verificar lockers en JFK.' },
+    bloques: [
+      { hora:'05:40', titulo:'Salida al aeropuerto', desc:'Uber desde Roma Norte al aeropuerto Benito Juárez (~40 min). Terminal 2. Vuelo MEX → JFK a las 08:40.', maps:'https://maps.google.com/?q=Aeropuerto+Internacional+Benito+Juarez+Ciudad+de+Mexico', mapsLabel:'Aeropuerto CDMX T2', lat:19.4363, lng:-99.0721 },
       { hora:'16:05', titulo:'Aterrizaje en JFK', desc:'El avión toca pista.', maps:'https://maps.google.com/?q=JFK+Airport', mapsLabel:'JFK Airport', lat:40.6413, lng:-73.7781 },
       { hora:'16:05', titulo:'Logística de escala', desc:'Migraciones / Aduana. Dejar equipaje en lockers de la terminal.', maps:'https://maps.google.com/?q=JFK+Airport', mapsLabel:'JFK Airport', lat:40.6413, lng:-73.7781 },
       { hora:'17:30', titulo:'AirTrain + LIRR', desc:'AirTrain hasta Jamaica (25 min). LIRR a Grand Central Madison (20 min).', maps:'https://maps.google.com/?q=Grand+Central+Madison+New+York', mapsLabel:'Grand Central Madison', lat:40.7527, lng:-73.9772 },
@@ -353,6 +433,19 @@ const dias = [
       { hora:'20:00', titulo:'Times Square de noche', desc:'Las escaleras rojas. El último bombardeo de luz y pantallas LED.', maps:'https://maps.google.com/?q=Times+Square+New+York', mapsLabel:'Times Square', lat:40.7580, lng:-73.9855, walk:{desde:'Chrysler Building → Times Square',dist:'900 m',mins:'11 min'} },
       { hora:'21:00', titulo:'Zona de cena — Hell\'s Kitchen', desc:'Decenas de opciones sobre la 9na Avenida entre las calles 44 y 56. La mejor relación precio/calidad de Midtown. Elegís en el momento.', maps:"https://maps.google.com/?q=Hell's+Kitchen+New+York", mapsLabel:"Hell's Kitchen", lat:40.7638, lng:-73.9918 },
       { hora:'22:00', titulo:'Retorno a JFK', desc:'LIRR + AirTrain. 3 horas de margen. Vuelo a las 02:00 AM.', maps:'https://maps.google.com/?q=JFK+Airport', mapsLabel:'JFK Airport', lat:40.6413, lng:-73.7781 }
+    ]
+  },
+  {
+    id: 'l08',
+    pill: 'Lun 8',
+    num: 'DÍA 12',
+    titulo: 'Llegada a Tel Aviv',
+    sub: 'JFK → Tel Aviv',
+    weatherDate: '2026-06-08',
+    nota: { label: 'Vuelo', texto: 'JFK → TLV salida 02:20, llegada 19:40. Terminal 3 Ben Gurion.' },
+    bloques: [
+      { hora:'02:20', titulo:'Vuelo JFK → Tel Aviv', desc:'Salida desde Terminal 4 JFK. Boeing 787-9. Llegada a Ben Gurion a las 19:40.', maps:'https://maps.google.com/?q=Ben+Gurion+Airport+Tel+Aviv', mapsLabel:'Ben Gurion Airport', lat:32.0055, lng:34.8854 },
+      { hora:'19:40', titulo:'Llegada a Tel Aviv', desc:'Fin del viaje. 11 días, 3 países, 2 ciudades.', maps:'https://maps.google.com/?q=Tel+Aviv', mapsLabel:'Tel Aviv', lat:32.0853, lng:34.7818 }
     ]
   }
 ];
