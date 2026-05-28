@@ -275,6 +275,20 @@ const STORAGE_KEY = 'nyc2026_checks_v2';
 
 const dias = [
   {
+    id: 'j28',
+    pill: 'Jue 28',
+    num: 'DÍA 00',
+    titulo: 'Salida desde Israel',
+    sub: 'Ramat Gan → Ben Gurion → Newark',
+    weatherDate: '2026-05-28',
+    nota: { label: 'Vuelo', texto: 'TLV → EWR, salida 00:30 del viernes 29. Estar en Ben Gurion a las 21:30 del jueves 28.' },
+    bloques: [
+      { hora:'20:45', titulo:'Salida desde Ramat Gan', desc:'Ramat Gan a Ben Gurion son ~20 min en taxi o Uber sin tráfico. Salís a las 20:45 para llegar cómodo a las 21:15 y tener margen.', maps:'https://maps.google.com/?q=Ben+Gurion+Airport+Terminal+3', mapsLabel:'Ben Gurion — Terminal 3', lat:32.0055, lng:34.8854 },
+      { hora:'21:30', titulo:'En el aeropuerto — Ben Gurion T3', desc:'Check-in, seguridad y sala de embarque. Vuelo El Al LY0027. Asiento 23G. Breakfast + Hot Meal incluidos.', maps:'https://maps.google.com/?q=Ben+Gurion+International+Airport', mapsLabel:'Ben Gurion Airport', lat:32.0055, lng:34.8854 },
+      { hora:'00:30', titulo:'Vuelo TLV → EWR', desc:'Salida viernes 29 a las 00:30. Duración 11h 45min. Boeing 787-9. Llegada a Newark a las 05:15.', maps:'https://maps.google.com/?q=Newark+Liberty+International+Airport', mapsLabel:'Newark Airport', lat:40.6895, lng:-74.1745 }
+    ]
+  },
+  {
     id: 'v29', pill: 'Vie 29', num: 'DÍA 01', titulo: 'El desembarco',
     sub: 'Arte moderno & noche libre', weatherDate: '2026-05-29',
     nota: { label: 'Nota', texto: 'La noche la definís en el momento según tu energía.' },
@@ -459,7 +473,28 @@ const WMO_ICON = {
 };
 
 let checks = (() => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'); } catch(e){ return {}; } })();
-let activeDayId = dias[0].id;
+function detectActiveDay() {
+  const today = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const todayStr = today.getFullYear() + '-' + pad(today.getMonth()+1) + '-' + pad(today.getDate());
+  // Mapa de fecha → id del día
+  const dateMap = {
+    '2026-05-28': 'j28',
+    '2026-05-29': 'v29',
+    '2026-05-30': 's30',
+    '2026-05-31': 'd31',
+    '2026-06-01': 'l01',
+    '2026-06-02': 'm02',
+    '2026-06-03': 'm03',
+    '2026-06-04': 'x04',
+    '2026-06-05': 'j05',
+    '2026-06-06': 'v06',
+    '2026-06-07': 's07',
+    '2026-06-08': 'l08',
+  };
+  return dateMap[todayStr] || dias[0].id;
+}
+let activeDayId = detectActiveDay();
 let activeTab = 'itinerario';
 let weatherData = null;
 let weatherHourly = null;
