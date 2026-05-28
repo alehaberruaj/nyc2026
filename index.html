@@ -7,6 +7,8 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗽</text></svg>">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>NYC & México 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 :root {
@@ -175,12 +177,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 
 /* MAPA */
 .map-day-title { font-size: 13px; font-weight: 700; color: var(--negro); margin-bottom: 10px; letter-spacing: 0.3px; }
-.map-frame { border-radius: 12px; overflow: hidden; border: 1px solid var(--gris5); margin-bottom: 20px; }
-.map-frame iframe { width: 100%; height: 280px; border: none; display: block; }
+#leaflet-map { width: 100%; height: 320px; border-radius: 12px; overflow: hidden; border: 1px solid var(--gris5); margin-bottom: 16px; }
 .map-points { margin-bottom: 6px; }
-.map-point { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--gris5); }
+.map-point { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 0.5px solid var(--gris5); cursor:pointer; }
 .map-point:last-child { border-bottom: none; }
-.map-point-num { width: 20px; height: 20px; border-radius: 50%; background: var(--rojo); color: white; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.map-point-num { width: 22px; height: 22px; border-radius: 50%; background: var(--rojo); color: white; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
 .map-point-name { font-size: 13px; color: var(--negro); font-weight: 500; }
 .map-point-hora { font-size: 11px; color: var(--gris4); margin-top: 1px; }
 .map-select { width: 100%; padding: 10px 14px; background: var(--negro); border: none; border-radius: 10px; color: white; font-size: 14px; margin-bottom: 16px; outline: none; appearance: none; }
@@ -268,6 +269,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 <div id="tab-mapa" class="panel">
   <div class="conv-label">ELEGÍ UN DÍA</div>
   <select class="map-select" id="mapSelect" onchange="renderMap()"></select>
+  <div id="leaflet-map"></div>
   <div id="mapContent"></div>
 </div>
 
@@ -701,35 +703,63 @@ function renderTips() {
   ).join('');
 }
 
+let leafletMap = null;
+let leafletMarkers = [];
+
 function renderMap() {
   const sel = document.getElementById('mapSelect');
   sel.innerHTML = dias.map(d => `<option value="${d.id}">${d.num} — ${d.pill} — ${d.titulo}</option>`).join('');
   sel.value = activeDayId;
   const dia = dias.find(d => d.id === sel.value);
-  if (!dia || !dia.bloques.length) {
+  const puntos = dia ? dia.bloques.filter(b => b.lat) : [];
+
+  if (!puntos.length) {
     document.getElementById('mapContent').innerHTML = '<p class="clima-loading">Sin puntos para este día.</p>';
+    if (leafletMap) { leafletMap.remove(); leafletMap = null; }
     return;
   }
-  const puntos = dia.bloques.filter(b => b.lat);
-  const centerLat = puntos.reduce((a,b) => a + b.lat, 0) / puntos.length;
-  const centerLng = puntos.reduce((a,b) => a + b.lng, 0) / puntos.length;
-  const query = puntos.map(p => `${p.lat},${p.lng}`).join('|');
-  const mapsUrl = `https://maps.google.com/?q=${puntos[0].lat},${puntos[0].lng}`;
 
+  // Inicializar o limpiar mapa
+  if (!leafletMap) {
+    leafletMap = L.map('leaflet-map', { zoomControl: true, attributionControl: false });
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      maxZoom: 19
+    }).addTo(leafletMap);
+  } else {
+    leafletMarkers.forEach(m => m.remove());
+    leafletMarkers = [];
+  }
+
+  // Agregar markers numerados
+  puntos.forEach((p, i) => {
+    const icon = L.divIcon({
+      className: '',
+      html: `<div style="width:26px;height:26px;background:#D62828;border-radius:50%;color:white;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.3);">${i+1}</div>`,
+      iconSize: [26, 26],
+      iconAnchor: [13, 13]
+    });
+    const marker = L.marker([p.lat, p.lng], { icon })
+      .addTo(leafletMap)
+      .bindPopup(`<strong>${p.titulo}</strong><br>${p.hora}<br><a href="${p.maps}" target="_blank" style="color:#1a73e8;">Abrir en Maps →</a>`);
+    leafletMarkers.push(marker);
+  });
+
+  // Ajustar vista a todos los puntos
+  const bounds = L.latLngBounds(puntos.map(p => [p.lat, p.lng]));
+  leafletMap.fitBounds(bounds, { padding: [30, 30] });
+
+  // Lista de puntos debajo del mapa
   document.getElementById('mapContent').innerHTML = `
     <div class="map-day-title">${dia.titulo.toUpperCase()} — ${dia.sub}</div>
-    <div class="map-frame">
-      <iframe src="https://maps.google.com/maps?q=${centerLat},${centerLng}&z=13&output=embed" allowfullscreen loading="lazy"></iframe>
-    </div>
     <div class="map-points">
       ${puntos.map((p,i) => `
-        <a class="map-point" href="https://maps.google.com/?q=${p.lat},${p.lng}" target="_blank" style="text-decoration:none;color:inherit;">
+        <div class="map-point" onclick="leafletMarkers[${i}].openPopup(); leafletMap.setView([${p.lat},${p.lng}], 15);">
           <div class="map-point-num">${i+1}</div>
           <div>
             <div class="map-point-name">${p.titulo}</div>
             <div class="map-point-hora">${p.hora} · ${p.mapsLabel}</div>
           </div>
-        </a>`).join('')}
+        </div>`).join('')}
     </div>`;
 }
 
